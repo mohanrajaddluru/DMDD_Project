@@ -25,3 +25,8 @@ BEGIN
    EXECUTE IMMEDIATE 'ALTER USER ' || v_username || ' QUOTA UNLIMITED ON DATA';
    DBMS_OUTPUT.PUT_LINE('Privileges granted to user ' || v_username || '.');
 END;
+/
+
+create user customer identified by Books_buy_Password_321;
+grant create session to customer;
+
