@@ -171,9 +171,11 @@ BEGIN
         author NUMBER(10),
         publisher NUMBER(10),
         genres_id NUMBER(10),
+        second_author NUMBER(10),
         FOREIGN KEY (author) REFERENCES authors(ID),
         FOREIGN KEY (PUBLISHER) REFERENCES publishers(ID),
-        FOREIGN KEY (genres_id) REFERENCES genres(ID))';
+        FOREIGN KEY (genres_id) REFERENCES genres(ID),
+        FOREIGN KEY (second_author) REFERENCES authors(ID))';
         DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' created successfully');
 EXCEPTION    
     WHEN OTHERS THEN
@@ -357,6 +359,7 @@ END;
 
 commit;
 
+--insert customer data
 insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Frederica', 'Weyland', '5dosw3KgxZt', '16vhAt1h', '88980', 'Mccormick', '50879', '18', 'Del Valle', '6925062365');
 insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Cathrin', 'Lydon', 'XyF5qCoKk2', '1Ja2KaAbqMv', '258745', 'Hollow Ridge', '50288', '24', 'Simpangpasir', '6494667002');
 insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Cad', 'Mullane', '1hJCqJJDBf', '14o9ckgKCFN', '787870', 'Miller', '77311', '3', 'Bené Beraq', '9655173858');
@@ -370,8 +373,31 @@ insert into customers (id, first_name, last_name, login, passwordHash, postal_co
 insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Elias', 'Pestell', 'tz1Y5Qjzu5', '8aqjtSgW2Av', '254541', 'Superior', '7036', '12', 'Huaikan', '6295597641');
 insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Borden', 'Credland', 'werPZhbW', '3cNhY7hxkGY', '454548', 'Corben', '26', '52', 'Chervonoarmiys', '5686751532');
 
+--insert books
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '617214699-8', 'Secret of NIMH 2: Timmy to the Rescue, The', '17-Sep-2017', 1, 56, '43.76');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '753962689-5', 'Go Now', '06-Aug-2017', 2, 25, '40.61');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '534269730-1', 'Hawk the Slayer', '21-May-2016', 3, 38, '48.45');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '414915876-2', 'Mystery Train', '03-Dec-2016', 2, 48, '32.14');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '630951129-7', 'Green Hornet, The', '31-Dec-2021', 1, 57, '22.05');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '924244434-0', 'The Walking Stick', '21-Sep-2014', 1, 60, '43.04');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '853664505-9', 'Iron Mask, The', '08-May-2019', 8,12, '12.26');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '818160811-9', 'Budd Boetticher: An American Original ', '08-Aug-2015', 8, 58, '38.92');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '963464143-1', 'High Life', '19-Nov-2022', 2, 26, '17.05');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '114457604-0', 'Croods, The', '06-Sep-2015', 5, 11, '27.50');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '708833782-7', 'Arrival, The', '19-Oct-2021', 1, 51, '27.78');
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '411832645-0', 'The Big Cube', '01-Jul-2019', 12, 32, '5.49');
 
-
-
-
+--insert authors
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Carr', 'Queenie', 'The Bookshelf');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Tallie', 'Mirabel', 'Gabtype');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Remington', 'Norman', 'Topiczoom');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Nerta', 'Maryjo', 'Paperback Adventures');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Petronella', 'Johnny', 'Youbridge');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Glynn', 'Barb', 'Fantasy Lights Bookstore');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Micheil', 'Mady', 'Aibox');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Trina', 'Zelda', 'Dabvine');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Silas', 'Allen', 'Photobug');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Uri', 'Mona', 'Tanoodle');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Antin', 'Olympe', 'The Reading Nook');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Herminia', 'Leslie', 'Yakitri');
 
