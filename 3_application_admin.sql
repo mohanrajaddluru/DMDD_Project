@@ -33,11 +33,50 @@ BEGIN
 END;
 /
 commit;
+
+
+---------------- creating customer role 
+
+set serveroutput on
+DECLARE
+   user_exist INTEGER;
+BEGIN
+   SELECT COUNT(*) INTO user_exist FROM all_users WHERE username = 'CUSTOMER';
+   IF user_exist > 0 THEN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP USER CUSTOMER CASCADE';
+            DBMS_OUTPUT.PUT_LINE('User dropped successfully.');
+            EXECUTE IMMEDIATE 'CREATE USER customer IDENTIFIED BY "Custom_Password@321"';
+            EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO CUSTOMER';
+            DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
+            EXECUTE IMMEDIATE 'GRANT SELECT ON application_admin.books TO CUSTOMER';
+            --EXECUTE IMMEDIATE 'GRANT SELECT ON discounts_id_seq TO sales_executive';
+            EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
+            DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
+        EXCEPTION
+            WHEN OTHERS THEN
+            IF SQLCODE!=-1918 THEN
+                DBMS_OUTPUT.PUT_LINE('Currently user is connected cannot be deleted');
+            END IF;
+        END;
+    ELSE 
+        EXECUTE IMMEDIATE 'CREATE USER customer IDENTIFIED BY "Custom_Password@321"';
+        DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
+        EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO CUSTOMER';
+        EXECUTE IMMEDIATE 'GRANT SELECT application_admin.books TO customer';
+        DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
+        
+   END IF;    
+END;
+/
+commit;
+
+
 -----------Script to check if the customers are already exist or not, if exit raise exception else add into customer table
 
 
 
-set serveroutput on
+/*set serveroutput on
 DECLARE
   v_customer_id customers.id%TYPE;
   v_customer_email customers.login%TYPE;
@@ -72,4 +111,27 @@ END;
 /
 
 commit;
+*/
 
+
+
+
+
+
+
+-------------- creating the script for customer creating in the database
+
+/*DECLARE
+  v_username VARCHAR2(30);
+  v_password VARCHAR2(30);
+BEGIN
+  FOR c IN (SELECT login,passwordHash FROM customers)
+  LOOP
+    v_username := c.login;
+    v_password := 'Hash_Password@123';
+    EXECUTE IMMEDIATE 'CREATE USER ' || v_username || ' IDENTIFIED BY " '|| v_password ||' " ' ;
+  END LOOP;
+END;
+*/
+
+--select passwordHash from customers;

@@ -447,3 +447,186 @@ select * from customers;
 commit;
 
 --select * from discounts;
+
+
+
+-------------- adding random shippers data to the shippers table
+
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'ABC Shipping', 5551234567);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'XYZ Shipping', 5552345678);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'Acme Shipping', 5553456789);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'Globe Shipping', 5554567890);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'Oceanic Shipping', 5555678901);
+
+
+
+select * from shippers;
+
+commit;
+
+
+
+------------------creating the views for the customers to show the books details
+
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW books_details';
+        DBMS_OUTPUT.PUT_LINE('dropped books_details view');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+    EXECUTE IMMEDIATE 'CREATE VIEW books_details AS
+                       SELECT b.title, b.isbn, a.first_name author_name, b.price AS price, p.name AS publisher_name
+                       FROM books b
+                       JOIN authors a ON b.author = a.id
+                       JOIN publishers p ON b.publisher = p.id';
+    DBMS_OUTPUT.PUT_LINE('created the books_details view');
+    EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
+    DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
+END;
+/
+commit;
+
+-------------  creating view for the number of books in the each genre
+
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW books_per_genre';
+        DBMS_OUTPUT.PUT_LINE('dropped books_per_genre view');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+    EXECUTE IMMEDIATE 'CREATE VIEW books_per_genre AS
+                       SELECT g.name AS genre, COUNT(b.id) AS book_count
+                       FROM genres g
+                       JOIN books b ON b.genres_id = g.id
+                       GROUP BY g.name';
+    DBMS_OUTPUT.PUT_LINE('created books_per_genre view');
+    EXECUTE IMMEDIATE 'GRANT SELECT ON books_per_genre TO sales_executive';
+    DBMS_OUTPUT.PUT_LINE('provided view access of books_per_genre to the sales_executive');
+END;
+/
+commit;
+
+----------------creating view to see the number of books by author;
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW NUMBER_OF_BOOKS_BY_AUTHOR';
+        DBMS_OUTPUT.PUT_LINE('dropped NUMBER_OF_BOOKS_BY_AUTHOR view');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+
+    EXECUTE IMMEDIATE 'CREATE VIEW NUMBER_OF_BOOKS_BY_AUTHOR AS
+                       SELECT a.first_name || '' '' || a.second_name AS author_name, COUNT(b.id) AS book_count
+                       FROM authors a
+                       JOIN books b ON b.author = a.id
+                       GROUP BY a.first_name, a.second_name';
+    DBMS_OUTPUT.PUT_LINE('created NUMBER_OF_BOOKS_BY_AUTHOR view');
+    EXECUTE IMMEDIATE 'GRANT SELECT ON NUMBER_OF_BOOKS_BY_AUTHOR TO sales_executive';
+    DBMS_OUTPUT.PUT_LINE('provided view access of NUMBER_OF_BOOKS_BY_AUTHOR to the sales_executive');
+END;
+/
+
+commit;
+
+--select * from authors;
+
+-------------------- creating the list of books_order_by_rating view and providing the access to the sales_executive
+
+
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW LIST_OF_BOOKS_ORDER_BY_RATING';
+        DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING dropped successfully');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+    EXECUTE IMMEDIATE 'CREATE VIEW LIST_OF_BOOKS_ORDER_BY_RATING AS
+                       SELECT b.title, r.rating
+                       FROM books b
+                       JOIN reviews r ON b.id = r.book_id
+                       ORDER BY r.rating DESC';
+    DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING created successfully');
+
+    EXECUTE IMMEDIATE 'GRANT SELECT ON LIST_OF_BOOKS_ORDER_BY_RATING TO sales_executive';
+END;
+/
+commit;
+
+
+
+
+---------------- sales_executive user removing in the database
+
+
+DECLARE
+   v_count NUMBER;
+BEGIN
+   SELECT COUNT(*)
+   INTO v_count
+   FROM all_users
+   WHERE username = 'SALES_EXECUTIVE';
+
+   IF v_count > 0 THEN
+      BEGIN
+         EXECUTE IMMEDIATE 'DROP USER SALES_EXECUTIVE CASCADE';
+      EXCEPTION
+         WHEN OTHERS THEN
+            IF SQLCODE = -1940 THEN
+               DBMS_OUTPUT.PUT_LINE('Cannot drop user SALES_EXECUTIVE because it is currently connected.');
+            ELSE
+               RAISE;
+            END IF;
+      END;
+   END IF;
+END;
+/
+
+---------------- customer user removing in the database
+
+
+
+DECLARE
+   v_count NUMBER;
+BEGIN
+   SELECT COUNT(*)
+   INTO v_count
+   FROM all_users
+   WHERE username = 'CUSTOMER';
+
+   IF v_count > 0 THEN
+      BEGIN
+         EXECUTE IMMEDIATE 'DROP USER CUSTOMER CASCADE';
+      EXCEPTION
+         WHEN OTHERS THEN
+            IF SQLCODE = -1940 THEN
+               DBMS_OUTPUT.PUT_LINE('Cannot drop user CUSTOMER because it is currently connected.');
+            ELSE
+               RAISE;
+            END IF;
+      END;
+   END IF;
+END;
+/
