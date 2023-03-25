@@ -360,5 +360,90 @@ commit;
 
 
 
+------- inserting sample data to the authors table
+
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Leda', 'Dupree', 'Schuppe, Kling and Koepp');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Shayne', 'Steffan', 'Kautzer Inc');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Anatola', 'Aveline', 'Breitenberg Group');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Lesly', 'Delhay', 'Haag Group');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Charleen', 'Selley', 'Mitchell LLC');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Meredithe', 'Stanbra', 'Hilll-Nicolas');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Zolly', 'Kilvington', 'Feeney-Schimmel');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Aluino', 'Thairs', 'Renner-Donnelly');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Jamima', 'Dunthorne', 'Haag, Feest and Mante');
+
+commit;
+
+----------inserting the sample data to the publishers table
 
 
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Daugherty-Collier publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Boyer LLC publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Kemmer-Shanahan publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Bailey, Wyman and Zulauf publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'McDermott-Bergstrom publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Fay and Sons publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Adams and Sons publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'O''Keefe-Rath publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Rosenbaum Group publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Cole Group publishing');
+
+commit;
+--select * from publishers;
+
+
+
+-------------- inserting random data to the genres table
+
+
+insert into genres (id, name) values (genres_id_seq.nextval, 'Drama');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Comedy');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Musical');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Horror');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Action');
+
+commit;
+---select * from genres;
+
+
+
+---------------inserting random data to the customers table
+
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
+
+
+select * from customers;
+
+commit;
+
+--select * from discounts;

@@ -13,6 +13,8 @@ BEGIN
             EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO sales_executive';
             DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
             EXECUTE IMMEDIATE 'GRANT INSERT, SELECT, UPDATE, DELETE ON application_admin.discounts TO sales_executive';
+            EXECUTE IMMEDIATE 'GRANT SELECT ON discounts_id_seq TO sales_executive';
+
             DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
         EXCEPTION
             WHEN OTHERS THEN
@@ -70,3 +72,4 @@ END;
 /
 
 commit;
+
