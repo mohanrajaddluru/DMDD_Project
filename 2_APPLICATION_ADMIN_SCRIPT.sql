@@ -171,8 +171,10 @@ BEGIN
         author NUMBER(10),
         publisher NUMBER(10),
         genres_id NUMBER(10),
+        second_author NUMBER(10),
         FOREIGN KEY (author) REFERENCES authors(ID),
         FOREIGN KEY (PUBLISHER) REFERENCES publishers(ID),
+        FOREIGN KEY (second_author) REFERENCES authors(ID),
         FOREIGN KEY (genres_id) REFERENCES genres(ID))';
         DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' created successfully');
 EXCEPTION    
@@ -390,7 +392,7 @@ insert into publishers (id, name) values (publishers_id_seq.nextval, 'Rosenbaum 
 insert into publishers (id, name) values (publishers_id_seq.nextval, 'Cole Group publishing');
 
 commit;
---select * from publishers;
+select * from publishers;
 
 
 
@@ -404,7 +406,44 @@ insert into genres (id, name) values (genres_id_seq.nextval, 'Horror');
 insert into genres (id, name) values (genres_id_seq.nextval, 'Action');
 
 commit;
----select * from genres;
+select * from genres;
+
+
+
+
+----inserting data to books table
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '071565262-1', 'Hijacking, A (Kapringen)', '10-Jul-2009', 2, 21, '30.53', 8, 4, 1, 10);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '737630122-4', 'Feds', '06-Jun-2021', 7, 28, '11.12', 5, 3, 1, 7);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '080493554-8', 'The Retrieval', '19-Apr-2007', 3, 36, '49.71', 2, 4, 2, 10);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '950390775-6', 'Vibrator', '09-May-2012', 5, 32, '9.19', 4, 5, 4, 6);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '576385689-9', 'That Darn Cat', '24-Jan-2019', 4, 14, '25.50', 4, 9, 4, 9);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '576092850-3', 'Beauty Is Embarrassing', '29-Apr-2017', 1, 9, '34.53', 1, 9, 1, 4);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '003401359-8', 'Paperhouse', '22-Jan-2005', 8, 18, '27.47', 2, 2, 5, 6);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '054598826-8', 'Hipnos', '22-Sep-2019', 7, 9, '14.71', 3, 9, 4, 10);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '601106338-1', 'Sexual Dependency (Dependencia sexual)', '29-Nov-2022', 8, 16, '22.68', 10, 10, 5, 6);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '887272387-6', 'Blood from the Mummy''s Tomb', '21-Apr-2011', 8, 22, '46.25', 4, 3, 1, 6);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '846648116-8', 'Saturday Night and Sunday Morning', '18-Sep-2007', 3, 42, '39.54', 8, 3, 3, 6);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '477516181-4', 'Pop Redemption', '18-Nov-2004', 1, 46, '24.72', 10, 10, 2, 4);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '177234816-3', 'Triangle', '27-Dec-2019', 4, 45, '26.04', 3, 6, 1, 10);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '033565928-4', 'Chambre en ville, Une (Room in Town, A)', '26-Jun-2015', 5, 19, '14.85', 5, 5, 1, 10);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '756692719-1', 'Princess and the Warrior, The (Krieger und die Kaiserin, Der)', '22-May-2020', 6, 22, '17.56', 6, 5, 4, 2);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '159415588-7', 'Dragon Age: Redemption', '28-May-2021', 4, 46, '46.19', 6, 7, 1, 2);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '534598548-0', 'Life in a Day', '31-Jul-2020', 3, 31, '51.89', 4, 7, 4, 2);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '040304009-4', 'Phantom Stagecoach, The', '27-Dec-2009', 3, 49, '20.65', 6, 8, 5, 8);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '208726697-2', 'Beyond the Black Rainbow', '01-Jul-2003', 1, 35, '40.69', 6, 2, 5, 2);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '390786558-8', 'Lilla Jönssonligan och Cornflakeskuppen', '10-Dec-2021', 2, 14, '27.84', 5, 4, 5, 8);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '539437824-X', 'Gentleman Jim', '06-Aug-2007', 2, 9, '24.97', 5, 6, 3, 3);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '323066598-8', 'Streets of Blood', '23-Mar-2010', 2, 30, '46.22', 4, 6, 4, 8);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '962954731-7', 'High Noon', '15-Sep-2009', 2, 43, '29.80', 4, 1, 5, 2);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '677811215-8', 'Tenure', '26-Sep-2021', 8, 12, '27.11', 3, 7, 1, 4);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '367867984-6', 'My Sex Life... or How I Got Into an Argument', '13-Dec-2020', 4, 35, '19.65', 7, 7, 5, 6);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '844570568-7', 'Seven Pounds', '08-Oct-2005', 2, 5, '42.52', 7, 6, 5, 7);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '532751488-9', 'Return of Swamp Thing, The', '23-Apr-2022', 4, 49, '26.75', 3, 4, 3, 1);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '578056906-1', 'Wodehouse In Exile', '29-Jan-2005', 5, 28, '29.94', 4, 9, 2, 9);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '507928973-2', 'Blackboards (Takhté Siah)', '14-Dec-2019', 8, 27, '27.83', 4, 2, 4, 3);
+insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '974662646-9', 'Wolf', '24-Jul-2005', 8, 6, '46.46', 8, 10, 1, 7);
+
+
 
 
 
@@ -490,7 +529,15 @@ BEGIN
                        JOIN authors a ON b.author = a.id
                        JOIN publishers p ON b.publisher = p.id';
     DBMS_OUTPUT.PUT_LINE('created the books_details view');
-    EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
+    BEGIN
+        EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
+        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
+    EXCEPTION
+        WHEN OTHERS THEN
+        IF SQLCODE = -1917 THEN
+            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
+        END IF;
+    END;
     DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
 END;
 /
