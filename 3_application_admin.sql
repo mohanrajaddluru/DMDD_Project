@@ -30,6 +30,43 @@ BEGIN
    END IF;    
 END;
 /
+commit;
+-----------Script to check if the customers are already exist or not, if exit raise exception else add into customer table
 
 
 
+set serveroutput on
+DECLARE
+  v_customer_id customers.id%TYPE;
+  v_customer_email customers.login%TYPE;
+BEGIN
+  -- Set the customer details
+  v_customer_email := 'kcaress0@jmdo.com'; ------ input need to taken here sample added now
+  -- set other customer details as needed
+
+  -- Check if the customer already exists
+  BEGIN
+    SELECT id INTO v_customer_id
+    FROM customers
+    WHERE login = v_customer_email;
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      v_customer_id := NULL;
+  END;
+
+  -- If the customer already exists, raise an exception
+  IF v_customer_id IS NOT NULL THEN
+    DBMS_OUTPUT.PUT_LINE(v_customer_email ||' already exists with ID ' || v_customer_id);
+    RETURN;
+    --RAISE_APPLICATION_ERROR(-20001, 'Customer already exists with ID ' || v_customer_id);
+  END IF;
+
+  -- If the customer does not exist, create the customer
+  INSERT INTO customers (ID, first_name, last_name, LOGIN, PASSWORDHASH, POSTAL_CODE, STREET, BUILDING_NO, FLAT_NO, CITY, PHONE_NUMBER)
+  VALUES (customers_id_seq.nextval, 'Kissee', 'Caress', 'kcaress0@jmdo.com', '457443f7c9bdc746b50c076615a6a42ea118bef1', '69400', 'Alley', '10', 55, 'Manacapuru', '9411740307');
+  DBMS_OUTPUT.PUT_LINE(v_customer_email || '  added successfully');
+  -- set other customer details as needed
+END;
+/
+
+commit;

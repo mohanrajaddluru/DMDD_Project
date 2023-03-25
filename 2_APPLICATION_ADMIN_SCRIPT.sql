@@ -204,7 +204,7 @@ BEGIN
         building_no  VARCHAR(5)          NOT NULL,
         flat_no      VARCHAR(5),
         city         VARCHAR(100)        NOT NULL,
-        phone_number VARCHAR(9))';
+        phone_number VARCHAR(10))';
         DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' created successfully');
 EXCEPTION    
     WHEN OTHERS THEN
