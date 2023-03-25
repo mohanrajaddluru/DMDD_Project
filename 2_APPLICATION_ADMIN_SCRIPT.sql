@@ -171,11 +171,9 @@ BEGIN
         author NUMBER(10),
         publisher NUMBER(10),
         genres_id NUMBER(10),
-        second_author NUMBER(10),
         FOREIGN KEY (author) REFERENCES authors(ID),
         FOREIGN KEY (PUBLISHER) REFERENCES publishers(ID),
-        FOREIGN KEY (genres_id) REFERENCES genres(ID),
-        FOREIGN KEY (second_author) REFERENCES authors(ID))';
+        FOREIGN KEY (genres_id) REFERENCES genres(ID))';
         DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' created successfully');
 EXCEPTION    
     WHEN OTHERS THEN
@@ -359,45 +357,276 @@ END;
 
 commit;
 
---insert customer data
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Frederica', 'Weyland', '5dosw3KgxZt', '16vhAt1h', '88980', 'Mccormick', '50879', '18', 'Del Valle', '6925062365');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Cathrin', 'Lydon', 'XyF5qCoKk2', '1Ja2KaAbqMv', '258745', 'Hollow Ridge', '50288', '24', 'Simpangpasir', '6494667002');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Cad', 'Mullane', '1hJCqJJDBf', '14o9ckgKCFN', '787870', 'Miller', '77311', '3', 'Bené Beraq', '9655173858');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Lindsay', 'Strippling', 'isTbZyr', 'DqejyFgh', '380854', 'Porter', '1', '6', 'Carregal', '4267089085');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Kevina', 'Praton', 'WQwhcUm', 'CWGSUtaWZ', '885000', 'Bowman', '209', '6', 'Celso Ramos', '7142840366');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Mady', 'Lewzey', 'uA4ZwS', '69VENDFp5fc', '253401', 'Summerview', '27745', '63', 'Hostivice', '8724918388');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Dael', 'Windybank', 'fffgQ7qQyqLx', 'E74PGW5Sr', '78452', 'Orin', '0745', '1', 'Slavs’ke', '7333735211');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Sabina', 'Hatchard', 'Xhr5Y1ZLik69p', 'EqqEN1nvm', '500401', 'Chinook', '5', '3016', 'Liboro', '6085302868');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Christean', 'Ackeroyd', 'tz1iK', 'FWRJ1XWhGs', '750008', 'Carpenter', '161', '8', 'Anápolis', '6714074850');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Ophelie', 'Aizik', 'gfg1YjxV2', 'PJ5asHy9pV5gScm', '785214', 'Walton', '2', '8', 'Manonjaya', '3131344487');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Elias', 'Pestell', 'tz1Y5Qjzu5', '8aqjtSgW2Av', '254541', 'Superior', '7036', '12', 'Huaikan', '6295597641');
-insert into customers (id, first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number) values (customers_id_seq.nextval, 'Borden', 'Credland', 'werPZhbW', '3cNhY7hxkGY', '454548', 'Corben', '26', '52', 'Chervonoarmiys', '5686751532');
 
---insert books
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '617214699-8', 'Secret of NIMH 2: Timmy to the Rescue, The', '17-Sep-2017', 1, 56, '43.76');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '753962689-5', 'Go Now', '06-Aug-2017', 2, 25, '40.61');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '534269730-1', 'Hawk the Slayer', '21-May-2016', 3, 38, '48.45');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '414915876-2', 'Mystery Train', '03-Dec-2016', 2, 48, '32.14');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '630951129-7', 'Green Hornet, The', '31-Dec-2021', 1, 57, '22.05');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '924244434-0', 'The Walking Stick', '21-Sep-2014', 1, 60, '43.04');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '853664505-9', 'Iron Mask, The', '08-May-2019', 8,12, '12.26');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '818160811-9', 'Budd Boetticher: An American Original ', '08-Aug-2015', 8, 58, '38.92');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '963464143-1', 'High Life', '19-Nov-2022', 2, 26, '17.05');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '114457604-0', 'Croods, The', '06-Sep-2015', 5, 11, '27.50');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '708833782-7', 'Arrival, The', '19-Oct-2021', 1, 51, '27.78');
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price) values (books_id_seq.nextval, '411832645-0', 'The Big Cube', '01-Jul-2019', 12, 32, '5.49');
 
---insert authors
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Carr', 'Queenie', 'The Bookshelf');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Tallie', 'Mirabel', 'Gabtype');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Remington', 'Norman', 'Topiczoom');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Nerta', 'Maryjo', 'Paperback Adventures');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Petronella', 'Johnny', 'Youbridge');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Glynn', 'Barb', 'Fantasy Lights Bookstore');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Micheil', 'Mady', 'Aibox');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Trina', 'Zelda', 'Dabvine');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Silas', 'Allen', 'Photobug');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Uri', 'Mona', 'Tanoodle');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Antin', 'Olympe', 'The Reading Nook');
-insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Herminia', 'Leslie', 'Yakitri');
 
+------- inserting sample data to the authors table
+
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Leda', 'Dupree', 'Schuppe, Kling and Koepp');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Shayne', 'Steffan', 'Kautzer Inc');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Anatola', 'Aveline', 'Breitenberg Group');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Lesly', 'Delhay', 'Haag Group');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Charleen', 'Selley', 'Mitchell LLC');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Meredithe', 'Stanbra', 'Hilll-Nicolas');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Zolly', 'Kilvington', 'Feeney-Schimmel');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Aluino', 'Thairs', 'Renner-Donnelly');
+insert into authors (id, first_name, second_name, company_name) values (authors_id_seq.nextval, 'Jamima', 'Dunthorne', 'Haag, Feest and Mante');
+
+commit;
+
+----------inserting the sample data to the publishers table
+
+
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Daugherty-Collier publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Boyer LLC publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Kemmer-Shanahan publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Bailey, Wyman and Zulauf publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'McDermott-Bergstrom publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Fay and Sons publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Adams and Sons publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'O''Keefe-Rath publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Rosenbaum Group publishing');
+insert into publishers (id, name) values (publishers_id_seq.nextval, 'Cole Group publishing');
+
+commit;
+--select * from publishers;
+
+
+
+-------------- inserting random data to the genres table
+
+
+insert into genres (id, name) values (genres_id_seq.nextval, 'Drama');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Comedy');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Musical');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Horror');
+insert into genres (id, name) values (genres_id_seq.nextval, 'Action');
+
+commit;
+---select * from genres;
+
+
+
+---------------inserting random data to the customers table
+
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
+
+INSERT INTO customers (first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
+VALUES ('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
+
+
+select * from customers;
+
+commit;
+
+--select * from discounts;
+
+
+
+-------------- adding random shippers data to the shippers table
+
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'ABC Shipping', 5551234567);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'XYZ Shipping', 5552345678);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'Acme Shipping', 5553456789);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'Globe Shipping', 5554567890);
+
+INSERT INTO shippers (id, name, phone_number) VALUES (shippers_id_seq.nextval, 'Oceanic Shipping', 5555678901);
+
+
+
+select * from shippers;
+
+commit;
+
+
+
+------------------creating the views for the customers to show the books details
+
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW books_details';
+        DBMS_OUTPUT.PUT_LINE('dropped books_details view');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+    EXECUTE IMMEDIATE 'CREATE VIEW books_details AS
+                       SELECT b.title, b.isbn, a.first_name author_name, b.price AS price, p.name AS publisher_name
+                       FROM books b
+                       JOIN authors a ON b.author = a.id
+                       JOIN publishers p ON b.publisher = p.id';
+    DBMS_OUTPUT.PUT_LINE('created the books_details view');
+    EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
+    DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
+END;
+/
+commit;
+
+-------------  creating view for the number of books in the each genre
+
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW books_per_genre';
+        DBMS_OUTPUT.PUT_LINE('dropped books_per_genre view');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+    EXECUTE IMMEDIATE 'CREATE VIEW books_per_genre AS
+                       SELECT g.name AS genre, COUNT(b.id) AS book_count
+                       FROM genres g
+                       JOIN books b ON b.genres_id = g.id
+                       GROUP BY g.name';
+    DBMS_OUTPUT.PUT_LINE('created books_per_genre view');
+    EXECUTE IMMEDIATE 'GRANT SELECT ON books_per_genre TO sales_executive';
+    DBMS_OUTPUT.PUT_LINE('provided view access of books_per_genre to the sales_executive');
+END;
+/
+commit;
+
+----------------creating view to see the number of books by author;
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW NUMBER_OF_BOOKS_BY_AUTHOR';
+        DBMS_OUTPUT.PUT_LINE('dropped NUMBER_OF_BOOKS_BY_AUTHOR view');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+
+    EXECUTE IMMEDIATE 'CREATE VIEW NUMBER_OF_BOOKS_BY_AUTHOR AS
+                       SELECT a.first_name || '' '' || a.second_name AS author_name, COUNT(b.id) AS book_count
+                       FROM authors a
+                       JOIN books b ON b.author = a.id
+                       GROUP BY a.first_name, a.second_name';
+    DBMS_OUTPUT.PUT_LINE('created NUMBER_OF_BOOKS_BY_AUTHOR view');
+    EXECUTE IMMEDIATE 'GRANT SELECT ON NUMBER_OF_BOOKS_BY_AUTHOR TO sales_executive';
+    DBMS_OUTPUT.PUT_LINE('provided view access of NUMBER_OF_BOOKS_BY_AUTHOR to the sales_executive');
+END;
+/
+
+commit;
+
+--select * from authors;
+
+-------------------- creating the list of books_order_by_rating view and providing the access to the sales_executive
+
+
+set serveroutput on
+BEGIN
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP VIEW LIST_OF_BOOKS_ORDER_BY_RATING';
+        DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING dropped successfully');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+    END;
+    EXECUTE IMMEDIATE 'CREATE VIEW LIST_OF_BOOKS_ORDER_BY_RATING AS
+                       SELECT b.title, r.rating
+                       FROM books b
+                       JOIN reviews r ON b.id = r.book_id
+                       ORDER BY r.rating DESC';
+    DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING created successfully');
+
+    EXECUTE IMMEDIATE 'GRANT SELECT ON LIST_OF_BOOKS_ORDER_BY_RATING TO sales_executive';
+END;
+/
+commit;
+
+
+
+
+---------------- sales_executive user removing in the database
+
+
+DECLARE
+   v_count NUMBER;
+BEGIN
+   SELECT COUNT(*)
+   INTO v_count
+   FROM all_users
+   WHERE username = 'SALES_EXECUTIVE';
+
+   IF v_count > 0 THEN
+      BEGIN
+         EXECUTE IMMEDIATE 'DROP USER SALES_EXECUTIVE CASCADE';
+      EXCEPTION
+         WHEN OTHERS THEN
+            IF SQLCODE = -1940 THEN
+               DBMS_OUTPUT.PUT_LINE('Cannot drop user SALES_EXECUTIVE because it is currently connected.');
+            ELSE
+               RAISE;
+            END IF;
+      END;
+   END IF;
+END;
+/
+
+---------------- customer user removing in the database
+
+
+
+DECLARE
+   v_count NUMBER;
+BEGIN
+   SELECT COUNT(*)
+   INTO v_count
+   FROM all_users
+   WHERE username = 'CUSTOMER';
+
+   IF v_count > 0 THEN
+      BEGIN
+         EXECUTE IMMEDIATE 'DROP USER CUSTOMER CASCADE';
+      EXCEPTION
+         WHEN OTHERS THEN
+            IF SQLCODE = -1940 THEN
+               DBMS_OUTPUT.PUT_LINE('Cannot drop user CUSTOMER because it is currently connected.');
+            ELSE
+               RAISE;
+            END IF;
+      END;
+   END IF;
+END;
+/
