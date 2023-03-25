@@ -622,9 +622,23 @@ END;
 /
 commit;
 
+---creating the view to see the most number of books published
 
-
-
+DECLARE
+    v_publisher_name VARCHAR2(100);
+    v_max_books_published NUMBER;
+BEGIN
+    SELECT p.name, COUNT(*) INTO v_publisher_name, v_max_books_published
+    FROM books b
+    JOIN publishers p
+    ON b.publisher = p.id
+    GROUP BY p.name
+    ORDER BY COUNT(*) DESC
+    FETCH FIRST 1 ROW ONLY;
+    DBMS_OUTPUT.PUT_LINE('Publisher with most books published: ' || v_publisher_name);
+    DBMS_OUTPUT.PUT_LINE('Number of books published: ' || v_max_books_published);
+END;
+/
 ---------------- sales_executive user removing in the database
 
 
