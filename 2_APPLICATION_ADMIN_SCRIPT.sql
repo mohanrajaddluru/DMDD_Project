@@ -562,7 +562,15 @@ BEGIN
                        JOIN books b ON b.genres_id = g.id
                        GROUP BY g.name';
     DBMS_OUTPUT.PUT_LINE('created books_per_genre view');
-    EXECUTE IMMEDIATE 'GRANT SELECT ON books_per_genre TO sales_executive';
+    BEGIN
+        EXECUTE IMMEDIATE 'GRANT SELECT ON books_per_genre TO sales_executive';
+        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
+    EXCEPTION
+        WHEN OTHERS THEN
+        IF SQLCODE = -1917 THEN
+            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
+        END IF;
+    END;
     DBMS_OUTPUT.PUT_LINE('provided view access of books_per_genre to the sales_executive');
 END;
 /
@@ -587,7 +595,15 @@ BEGIN
                        JOIN books b ON b.author = a.id
                        GROUP BY a.first_name, a.second_name';
     DBMS_OUTPUT.PUT_LINE('created NUMBER_OF_BOOKS_BY_AUTHOR view');
-    EXECUTE IMMEDIATE 'GRANT SELECT ON NUMBER_OF_BOOKS_BY_AUTHOR TO sales_executive';
+    BEGIN
+        EXECUTE IMMEDIATE 'GRANT SELECT ON NUMBER_OF_BOOKS_BY_AUTHOR TO sales_executive';
+        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
+    EXCEPTION
+        WHEN OTHERS THEN
+        IF SQLCODE = -1917 THEN
+            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
+        END IF;
+    END;
     DBMS_OUTPUT.PUT_LINE('provided view access of NUMBER_OF_BOOKS_BY_AUTHOR to the sales_executive');
 END;
 /
@@ -616,8 +632,15 @@ BEGIN
                        JOIN reviews r ON b.id = r.book_id
                        ORDER BY r.rating DESC';
     DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING created successfully');
-
-    EXECUTE IMMEDIATE 'GRANT SELECT ON LIST_OF_BOOKS_ORDER_BY_RATING TO sales_executive';
+     BEGIN
+        EXECUTE IMMEDIATE 'GRANT SELECT ON LIST_OF_BOOKS_ORDER_BY_RATING TO sales_executive';
+        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
+    EXCEPTION
+        WHEN OTHERS THEN
+        IF SQLCODE = -1917 THEN
+            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
+        END IF;
+    END;
 END;
 /
 commit;
@@ -639,6 +662,7 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Number of books published: ' || v_max_books_published);
 END;
 /
+commit;
 ---------------- sales_executive user removing in the database
 
 
@@ -664,6 +688,7 @@ BEGIN
    END IF;
 END;
 /
+commit;
 
 ---------------- customer user removing in the database
 
@@ -691,3 +716,4 @@ BEGIN
    END IF;
 END;
 /
+commit;

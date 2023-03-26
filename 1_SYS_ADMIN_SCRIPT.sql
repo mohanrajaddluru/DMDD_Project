@@ -30,3 +30,4 @@ BEGIN
    DBMS_OUTPUT.PUT_LINE('Privileges granted to user ' || v_username || '.');
 END;
 /
+commit;
