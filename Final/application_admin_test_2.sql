@@ -346,23 +346,111 @@ EXCEPTION
 END;
 /
 
---desc authors;
+--creates tables upto here 
 
---select * from authors;
-
-
---insert into authors values (authors_id_seq.nextval,'fir','seco','compa');
-
---select * from authors;
+------------------------------------------------------------------------------------------------------------------------------
+--creating the procedure for authors
 
 
-
+create or replace PROCEDURE add_authors (
+    p_first_name IN authors.first_name%TYPE,
+    p_second_name IN authors.second_name%TYPE,
+    p_company_name IN authors.company_name%TYPE
+)
+IS
+BEGIN
+    INSERT INTO authors (id,first_name, second_name, company_name)
+    VALUES (authors_id_seq.nextval, p_first_name, p_second_name, p_company_name);
+    commit;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Invalid author, publisher, or genre ID');
+    WHEN OTHERS THEN
+        IF SQLCODE = -2291 THEN
+            DBMS_OUTPUT.PUT_LINE('Parent key not found');
+        ELSIF SQLCODE = -2292 THEN
+            DBMS_OUTPUT.PUT_LINE('Child records exist');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+        END IF;
+END;
+/
 commit;
 
-----------------------------------------------------------------------------------
+---------------------
 
---procedure to add the customers to customers table
 
+--creating the procedure for publishers
+
+
+create or replace PROCEDURE add_publishers (
+    p_name IN publishers.name%TYPE
+)
+IS
+BEGIN
+    INSERT INTO publishers (id,name)
+    VALUES (publishers_id_seq.nextval, p_name);
+    commit;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Invalid author, publisher, or genre ID');
+    WHEN OTHERS THEN
+        IF SQLCODE = -2291 THEN
+            DBMS_OUTPUT.PUT_LINE('Parent key not found');
+        ELSIF SQLCODE = -2292 THEN
+            DBMS_OUTPUT.PUT_LINE('Child records exist');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+        END IF;
+END;
+/
+commit;
+
+----------------------creating the procedure for genres
+
+create or replace PROCEDURE add_genres (
+    p_name IN genres.name%TYPE
+)
+IS
+    v_genre_name genres.name%TYPE;
+BEGIN
+    v_genre_name := UPPER(p_name);
+    INSERT INTO genres (id,name)
+    VALUES (genres_id_seq.nextval, v_genre_name);
+    commit;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Invalid author, publisher, or genre ID');
+    WHEN OTHERS THEN
+        IF SQLCODE = -2291 THEN
+            DBMS_OUTPUT.PUT_LINE('Parent key not found');
+        ELSIF SQLCODE = -2292 THEN
+            DBMS_OUTPUT.PUT_LINE('Child records exist');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+        END IF;
+END;
+/
+commit;
+
+
+----------------------creating the procedure for shippers
+
+
+CREATE OR REPLACE PROCEDURE add_shippers (
+    p_name IN shippers.name%TYPE,
+    p_phone_number IN shippers.phone_number%TYPE
+)
+IS
+BEGIN
+    INSERT INTO shippers(id,name, phone_number)
+    VALUES (shippers_id_seq.nextval,p_name, p_phone_number);
+    COMMIT;
+END;
+/
+commit;
+
+----------------------creating the procedure for customers
 
 CREATE OR REPLACE PROCEDURE add_customer (
     p_customer_first_name IN customers.first_name%TYPE,
@@ -379,7 +467,7 @@ CREATE OR REPLACE PROCEDURE add_customer (
 IS
 BEGIN
     INSERT INTO customers (id,first_name, last_name, login, passwordHash, postal_code, street, building_no, flat_no, city, phone_number)
-    VALUES (customers_id_seq.nextval,p_customer_first_name, p_customer_last_name, p_customer_email, p_customer_password, p_customer_zip, p_customer_street, p_customer_building_no, p_customer_flat_no, p_customer_city, p_customer_phone);
+    VALUES (customers_id_seq.nextval,LOWER(p_customer_first_name), LOWER(p_customer_last_name), LOWER(p_customer_email), p_customer_password, p_customer_zip, p_customer_street, p_customer_building_no, p_customer_flat_no, p_customer_city, p_customer_phone);
     COMMIT;
 EXCEPTION
     WHEN OTHERS THEN
@@ -388,8 +476,9 @@ END;
 /
 commit;
 
-----------------------------------
---select * from application_admin.books;
+
+----------------------creating the procedure for books
+
 create or replace PROCEDURE add_books (
     p_isbn IN books.isbn%TYPE,
     p_title IN books.title%TYPE,
@@ -423,175 +512,12 @@ EXCEPTION
 END;
 /
 commit;
--------------------------------------------------------------
-
-------------------------------------------
-select * from authors;
-create or replace PROCEDURE add_authors (
-    p_first_name IN authors.first_name%TYPE,
-    p_second_name IN authors.second_name%TYPE,
-    p_company_name IN authors.company_name%TYPE
-)
-IS
-BEGIN
-    INSERT INTO authors (id,first_name, second_name, company_name)
-    VALUES (authors_id_seq.nextval, p_first_name, p_second_name, p_company_name);
-    commit;
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        DBMS_OUTPUT.PUT_LINE('Invalid author, publisher, or genre ID');
-    WHEN OTHERS THEN
-        IF SQLCODE = -2291 THEN
-            DBMS_OUTPUT.PUT_LINE('Parent key not found');
-        ELSIF SQLCODE = -2292 THEN
-            DBMS_OUTPUT.PUT_LINE('Child records exist');
-        ELSE
-            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-        END IF;
-END;
-/
-commit;
-
------------------------------------------
-----------inserting the sample data to the publishers table
-
-create or replace PROCEDURE add_publishers (
-    p_name IN publishers.name%TYPE
-)
-IS
-BEGIN
-    INSERT INTO publishers (id,name)
-    VALUES (publishers_id_seq.nextval, p_name);
-    commit;
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        DBMS_OUTPUT.PUT_LINE('Invalid author, publisher, or genre ID');
-    WHEN OTHERS THEN
-        IF SQLCODE = -2291 THEN
-            DBMS_OUTPUT.PUT_LINE('Parent key not found');
-        ELSIF SQLCODE = -2292 THEN
-            DBMS_OUTPUT.PUT_LINE('Child records exist');
-        ELSE
-            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-        END IF;
-END;
-/
-commit;
--------------- inserting random data to the genres table
-
-create or replace PROCEDURE add_genres (
-    p_name IN genres.name%TYPE
-)
-IS
-    v_genre_name genres.name%TYPE;
-BEGIN
-    v_genre_name := UPPER(p_name);
-    INSERT INTO genres (id,name)
-    VALUES (genres_id_seq.nextval, v_genre_name);
-    commit;
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        DBMS_OUTPUT.PUT_LINE('Invalid author, publisher, or genre ID');
-    WHEN OTHERS THEN
-        IF SQLCODE = -2291 THEN
-            DBMS_OUTPUT.PUT_LINE('Parent key not found');
-        ELSIF SQLCODE = -2292 THEN
-            DBMS_OUTPUT.PUT_LINE('Child records exist');
-        ELSE
-            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-        END IF;
-END;
-/
-commit;
-
-----inserting data to books table
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '071565262-1', 'Hijacking, A (Kapringen)', '10-Jul-2009', 2, 21, '30.53', 8, 4, 1, 10);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '737630122-4', 'Feds', '06-Jun-2021', 7, 28, '11.12', 5, 3, 1, 7);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '080493554-8', 'The Retrieval', '19-Apr-2007', 3, 36, '49.71', 2, 4, 2, 10);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '950390775-6', 'Vibrator', '09-May-2012', 5, 32, '9.19', 4, 5, 4, 6);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '576385689-9', 'That Darn Cat', '24-Jan-2019', 4, 14, '25.50', 4, 9, 4, 9);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '576092850-3', 'Beauty Is Embarrassing', '29-Apr-2017', 1, 9, '34.53', 1, 9, 1, 4);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '003401359-8', 'Paperhouse', '22-Jan-2005', 8, 18, '27.47', 2, 2, 5, 6);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '054598826-8', 'Hipnos', '22-Sep-2019', 7, 9, '14.71', 3, 9, 4, 10);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '601106338-1', 'Sexual Dependency (Dependencia sexual)', '29-Nov-2022', 8, 16, '22.68', 10, 10, 5, 6);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '887272387-6', 'Blood from the Mummy''s Tomb', '21-Apr-2011', 8, 22, '46.25', 4, 3, 1, 6);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '846648116-8', 'Saturday Night and Sunday Morning', '18-Sep-2007', 3, 42, '39.54', 8, 3, 3, 6);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '477516181-4', 'Pop Redemption', '18-Nov-2004', 1, 46, '24.72', 10, 10, 2, 4);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '177234816-3', 'Triangle', '27-Dec-2019', 4, 45, '26.04', 3, 6, 1, 10);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '033565928-4', 'Chambre en ville, Une (Room in Town, A)', '26-Jun-2015', 5, 19, '14.85', 5, 5, 1, 10);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '756692719-1', 'Princess and the Warrior, The (Krieger und die Kaiserin, Der)', '22-May-2020', 6, 22, '17.56', 6, 5, 4, 2);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '159415588-7', 'Dragon Age: Redemption', '28-May-2021', 4, 46, '46.19', 6, 7, 1, 2);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '534598548-0', 'Life in a Day', '31-Jul-2020', 3, 31, '51.89', 4, 7, 4, 2);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '040304009-4', 'Phantom Stagecoach, The', '27-Dec-2009', 3, 49, '20.65', 6, 8, 5, 8);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '208726697-2', 'Beyond the Black Rainbow', '01-Jul-2003', 1, 35, '40.69', 6, 2, 5, 2);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '390786558-8', 'Lilla J�nssonligan och Cornflakeskuppen', '10-Dec-2021', 2, 14, '27.84', 5, 4, 5, 8);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '539437824-X', 'Gentleman Jim', '06-Aug-2007', 2, 9, '24.97', 5, 6, 3, 3);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '323066598-8', 'Streets of Blood', '23-Mar-2010', 2, 30, '46.22', 4, 6, 4, 8);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '962954731-7', 'High Noon', '15-Sep-2009', 2, 43, '29.80', 4, 1, 5, 2);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '677811215-8', 'Tenure', '26-Sep-2021', 8, 12, '27.11', 3, 7, 1, 4);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '367867984-6', 'My Sex Life... or How I Got Into an Argument', '13-Dec-2020', 4, 35, '19.65', 7, 7, 5, 6);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '844570568-7', 'Seven Pounds', '08-Oct-2005', 2, 5, '42.52', 7, 6, 5, 7);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '532751488-9', 'Return of Swamp Thing, The', '23-Apr-2022', 4, 49, '26.75', 3, 4, 3, 1);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '578056906-1', 'Wodehouse In Exile', '29-Jan-2005', 5, 28, '29.94', 4, 9, 2, 9);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '507928973-2', 'Blackboards (Takht� Siah)', '14-Dec-2019', 8, 27, '27.83', 4, 2, 4, 3);
-insert into books (id, isbn, title, publication_date, edition, available_quantity, price, author, publisher, genres_id, second_author) values (books_id_seq.nextval, '974662646-9', 'Wolf', '24-Jul-2005', 8, 6, '46.46', 8, 10, 1, 7);
 
 
------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
 
 
--- adding customers data using the pl/sql add_customer procedure
-
-
-BEGIN
-  add_customer('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
-  add_customer('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
-  add_customer('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
-  add_customer('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
-  add_customer('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
-  add_customer('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
-  add_customer('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
-  add_customer('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
-  add_customer('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
-  add_customer('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
-  commit;
-END;
-/
-------------------------------------------------
-CREATE OR REPLACE PROCEDURE add_discounts (
-    --p_customer_id IN orders.customer_id%TYPE,
-    p_discount_name IN discounts.name%TYPE,
-    p_discount_value IN discounts.discount_value%TYPE,
-    p_book_id IN discounts.book_id%TYPE,
-    p_discount_expiry IN discounts.discount_expiry%TYPE
-)
-IS
-BEGIN
-    INSERT INTO discounts(id,name, discount_value, book_id, discount_expiry)
-    VALUES (discounts_id_seq.nextval,p_discount_name, p_discount_value, p_book_id, p_discount_expiry);
-    COMMIT;
-END;
-/
-commit;
-----------------------------------------------------------------------------------------------------------------
-
-
-CREATE OR REPLACE PROCEDURE add_shippers (
-    p_name IN shippers.name%TYPE,
-    p_phone_number IN shippers.phone_number%TYPE
-)
-IS
-BEGIN
-    INSERT INTO shippers(id,name, phone_number)
-    VALUES (shippers_id_seq.nextval,p_name, p_phone_number);
-    COMMIT;
-END;
-/
-commit;
-
-
-------------------------------------------------------------------------------------------
------- this script creates the sales_executive roles in the data base
+----------------creating the sales executive user 
 
 set serveroutput on
 DECLARE
@@ -627,7 +553,120 @@ END;
 /
 commit;
 
------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+----------------adding shipper details
+
+BEGIN
+    add_shippers('ABC Shipping', 5551234567);
+    add_shippers('XYZ Shipping', 5552345678);
+    add_shippers('Acme Shipping', 5553456789);
+    add_shippers('Globe Shipping', 5554567890);
+    add_shippers('Oceanic Shipping', 5555678901);
+    commit;
+END;
+/
+
+----------------adding publishers details
+
+BEGIN
+    add_publishers ('Daugherty-Collier publishing');
+    add_publishers ('Boyer LLC publishing');
+    add_publishers ('Kemmer-Shanahan publishing');
+    add_publishers ('Bailey, Wyman and Zulauf publishing');
+    add_publishers ('McDermott-Bergstrom publishing');
+    add_publishers ('Fay and Sons publishing');
+    add_publishers ('Adams and Sons publishing');
+    add_publishers ('O''Keefe-Rath publishing');
+    add_publishers ('Rosenbaum Group publishing');
+    add_publishers ('Cole Group publishing');
+END;
+/
+commit;
+
+
+-----------------------adding authors details
+
+BEGIN
+    add_authors ('Leda', 'Dupree', 'Schuppe, Kling and Koepp');
+    add_authors ('Shayne', 'Steffan', 'Kautzer Inc');
+    add_authors ('Anatola', 'Aveline', 'Breitenberg Group');
+    add_authors ('Lesly', 'Delhay', 'Haag Group');
+    add_authors ('Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
+    add_authors ('Charleen', 'Selley', 'Mitchell LLC');
+    add_authors ('Meredithe', 'Stanbra', 'Hilll-Nicolas');
+    add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
+    add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
+    add_authors ('Aluino', 'Thairs', 'Renner-Donnelly');
+    add_authors ('Jamima', 'Dunthorne', 'Haag, Feest and Mante');
+    commit;
+END;
+/
+
+-----------------------adding genre details
+
+BEGIN 
+    add_genres ('DRAMA');
+    add_genres ('Comedy');
+    add_genres ('Musical');
+    add_genres ('Horror');
+    add_genres ('Action');
+    add_genres ('Romantic');
+    add_genres ('sci-fi');
+    add_genres ('Documentry');
+    add_genres ('poetry');
+    add_genres ('mystery');
+    add_genres ('Humor');
+    commit;
+END;
+/
+
+----------------------adding customers data to the table
+
+BEGIN
+  add_customer('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
+  add_customer('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
+  add_customer('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
+  add_customer('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
+  add_customer('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
+  add_customer('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
+  add_customer('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
+  add_customer('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
+  add_customer('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
+  add_customer('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
+  commit;
+END;
+/
+
+----------------------adding books data to the table
+
+------------------------------------------------------------------------------------------
+
+DECLARE
+  l_genres_id genres.id%TYPE;
+  l_author_id authors.id%TYPE;
+  l_available_quantity books.available_quantity%TYPE;
+  l_edition books.edition%TYPE;
+  l_price books.price%TYPE;
+  l_publisher publishers.id%TYPE;
+BEGIN
+  SELECT id INTO l_author_id FROM authors ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
+  SELECT id INTO l_publisher FROM publishers ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
+  SELECT id INTO l_genres_id FROM genres ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
+  l_edition := FLOOR(DBMS_RANDOM.VALUE(1, 11));
+  l_available_quantity := FLOOR(DBMS_RANDOM.VALUE(1, 30));
+  l_price := ROUND(DBMS_RANDOM.VALUE(10, 100), 2);
+  add_books('071565262-4','Hijacking, A (Kapringen)', sysdate, l_edition, l_available_quantity, l_price,l_author_id, l_publisher, l_genres_id, l_author_id);
+END;
+/
+commit;
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 ------------------creating the views for the customers to show the books details
 
@@ -783,116 +822,3 @@ END;
 /
 commit;
 
---------------------------------------------------------------
-
-
----------------------------------------------------------------
---------------------------------------------------------------
---------------------------------------------------------------
-
---- data for genres
-
-BEGIN 
-    add_genres ('DRAMA');
-    add_genres ('Comedy');
-    add_genres ('Musical');
-    add_genres ('Horror');
-    add_genres ('Action');
-    add_genres ('Romantic');
-    add_genres ('sci-fi');
-    commit;
-END;
-/
-
---------------------------------------------------------------
---authors-procedure
-
-
-BEGIN
-    add_authors ('Leda', 'Dupree', 'Schuppe, Kling and Koepp');
-    add_authors ('Shayne', 'Steffan', 'Kautzer Inc');
-    add_authors ('Anatola', 'Aveline', 'Breitenberg Group');
-    add_authors ('Lesly', 'Delhay', 'Haag Group');
-    add_authors ('Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
-    add_authors ('Charleen', 'Selley', 'Mitchell LLC');
-    add_authors ('Meredithe', 'Stanbra', 'Hilll-Nicolas');
-    add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
-    add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
-    add_authors ('Aluino', 'Thairs', 'Renner-Donnelly');
-    add_authors ('Jamima', 'Dunthorne', 'Haag, Feest and Mante');
-    commit;
-END;
-/
-
---------------------------------------------------------------
-
---publishers procdure
-
-BEGIN
-    add_publishers ('Daugherty-Collier publishing');
-    add_publishers ('Boyer LLC publishing');
-    add_publishers ('Kemmer-Shanahan publishing');
-    add_publishers ('Bailey, Wyman and Zulauf publishing');
-    add_publishers ('McDermott-Bergstrom publishing');
-    add_publishers ('Fay and Sons publishing');
-    add_publishers ('Adams and Sons publishing');
-    add_publishers ('O''Keefe-Rath publishing');
-    add_publishers ('Rosenbaum Group publishing');
-    add_publishers ('Cole Group publishing');
-END;
-/
-commit;
-
---------------------------------------------------------------
-
------shippers procedure
-
-
-BEGIN
-    add_shippers('ABC Shipping', 5551234567);
-    add_shippers('XYZ Shipping', 5552345678);
-    add_shippers('Acme Shipping', 5553456789);
-    add_shippers('Globe Shipping', 5554567890);
-    add_shippers('Oceanic Shipping', 5555678901);
-    commit;
-END;
-/
-
---------------------------------------------------------------
-
-------procedure to add the books
-
-DECLARE
-    -- Define variables for date range
-    start_date DATE := TO_DATE('2022-01-01', 'YYYY-MM-DD');
-    end_date DATE := TO_DATE('2022-04-01', 'YYYY-MM-DD');
-    -- Generate random date within date range
-    random_date DATE := start_date + DBMS_RANDOM.VALUE(0, end_date - start_date + 1);
-BEGIN
-    -- Use random_date in your SQL statements to insert data into your database
-    add_books ('071565262-1', 'Hijacking, A (Kapringen)', random_date, 2, 21, '30.53', 8, 4, 1, 10);
-    add_books ('737630122-4', 'Feds', random_date, 7, 28, '11.12', 5, 3, 1, 7);
-    add_books ('071565262-1', 'Hijacking, A (Kapringen)', random_date, 2, 21, '30.53', 8, 4, 1, 10);
-    add_books ('071565262-1', 'Hijacking, A (Kapringen)', random_date, 2, 21, '30.53', 8, 4, 1, 10);
-    add_books ('071565262-1', 'Hijacking, A (Kapringen)', random_date, 2, 21, '30.53', 8, 4, 1, 10);
-    add_books ('071565262-1', 'Hijacking, A (Kapringen)', random_date, 2, 21, '30.53', 8, 4, 1, 10);
-    
-    commit;
-END;
-/
-
-select * from books;
-
-
-
-
-------------------------------------
-DECLARE
-    b_book_id discounts.book_id%TYPE;
-BEGIN
-    SELECT id INTO b_book_id FROM books ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
-    --DBMS_OUTPUT.PUT_LINE(b_book_id);
-    add_discounts(discounts_id_seq.nextval,'Book', 11.11, 1, sysdate);
-END;
-/
-commit;
