@@ -305,11 +305,13 @@ BEGIN
         customer_id int,
         order_date date,
         discount_id int,
+        book_id int,
         shipper int,
         status varchar(50),
         FOREIGN KEY (customer_id) REFERENCES customers(id),
         FOREIGN KEY (discount_id) REFERENCES discounts(id),
-        FOREIGN KEY (shipper) REFERENCES shippers(id))';
+        FOREIGN KEY (shipper) REFERENCES shippers(id),
+        FOREIGN KEY (book_id) REFERENCES books(id))';
         DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' created successfully');
 EXCEPTION    
     WHEN OTHERS THEN
@@ -320,7 +322,9 @@ EXCEPTION
     END IF;
 END;
 /
+commit;
 
+--select * from orders;
 
 ---------CREATING ORDERS DETAILS TABLES
 
@@ -516,6 +520,57 @@ commit;
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
+-----------creating the add_discounts procedure
+
+set serveroutput on
+CREATE OR REPLACE PROCEDURE add_discounts (
+    p_name IN discounts.name%TYPE,
+    p_discount_value IN discounts.discount_value%TYPE,
+    p_book_id IN discounts.book_id%TYPE,
+    p_discount_expiry IN discounts.discount_expiry%TYPE
+)
+IS
+BEGIN
+    INSERT INTO discounts(id,name, discount_value, book_id, discount_expiry)
+    VALUES (discounts_id_seq.nextval,p_name, p_discount_value, p_book_id, p_discount_expiry);
+    DBMS_OUTPUT.PUT_LINE('discounts added to table');
+    COMMIT;
+END;
+/
+COMMIT;
+
+
+-----------creating the add_orders procedure
+
+--select * from orders;
+
+--------------- update the order and reduce the available quantity after order is placed
+
+------------add if condition to check the book available or not
+
+CREATE OR REPLACE PROCEDURE add_orders (
+    p_customer_id IN orders.customer_id%TYPE,
+    p_order_date IN orders.order_date%TYPE,
+    p_discount_id IN orders.discount_id%TYPE,
+    p_book_id IN orders.book_id%TYPE,
+    p_shipper IN orders.shipper%TYPE,
+    p_status IN orders.status%TYPE
+)
+IS
+BEGIN
+    INSERT INTO orders(id,customer_id, order_date, discount_id, book_id, shipper, status)
+    VALUES (orders_id_seq.nextval,p_customer_id, p_order_date, p_discount_id, p_book_id, p_shipper, p_status);
+    
+    ----write trigger for the updating the books quantity
+    /*UPDATE books
+    SET available_quantity = available_quantity - 1
+    WHERE id = p_book_id;*/
+    COMMIT;
+END;
+/
+commit;
+
+--select * from books;
 
 ----------------creating the sales executive user 
 
@@ -533,6 +588,7 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
             EXECUTE IMMEDIATE 'GRANT INSERT, SELECT, UPDATE, DELETE ON application_admin.discounts TO sales_executive';
             EXECUTE IMMEDIATE 'GRANT SELECT ON discounts_id_seq TO sales_executive';
+            EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_discounts TO sales_executive';
 
             DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
         EXCEPTION
@@ -546,6 +602,8 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
         EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO sales_executive';
         EXECUTE IMMEDIATE 'GRANT INSERT, SELECT, UPDATE, DELETE ON application_admin.discounts TO sales_executive';
+        EXECUTE IMMEDIATE 'GRANT SELECT ON discounts_id_seq TO sales_executive';
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_discounts TO sales_executive';
         DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
         
    END IF;    
@@ -553,120 +611,144 @@ END;
 /
 commit;
 
+select * from customers;
+------------------------------------------------ creating customer role 
 
-------------------------------------------------------------------------------------------------------------------------------------
+set serveroutput on
+DECLARE
+   user_exist INTEGER;
+BEGIN
+   SELECT COUNT(*) INTO user_exist FROM all_users WHERE username = 'CUSTOMER';
+   IF user_exist > 0 THEN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP USER CUSTOMER CASCADE';
+            DBMS_OUTPUT.PUT_LINE('User dropped successfully.');
+            EXECUTE IMMEDIATE 'CREATE USER customer IDENTIFIED BY "Custom_Password@321"';
+            EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO CUSTOMER';
+            DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
+            EXECUTE IMMEDIATE 'GRANT SELECT ON application_admin.books TO CUSTOMER';
+            --EXECUTE IMMEDIATE 'GRANT SELECT ON discounts_id_seq TO sales_executive';
+            EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
+            EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_orders TO customer';
+            DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
+        EXCEPTION
+            WHEN OTHERS THEN
+            IF SQLCODE!=-1918 THEN
+                DBMS_OUTPUT.PUT_LINE('Currently user is connected cannot be deleted');
+            END IF;
+        END;
+    ELSE 
+        EXECUTE IMMEDIATE 'CREATE USER customer IDENTIFIED BY "Custom_Password@321"';
+        DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
+        EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO CUSTOMER';
+        EXECUTE IMMEDIATE 'GRANT SELECT application_admin.books TO customer';
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_orders TO customer';
+        DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
+        
+   END IF;    
+END;
+/
+commit;
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
 ----------------adding shipper details
 
-BEGIN
-    add_shippers('ABC Shipping', 5551234567);
-    add_shippers('XYZ Shipping', 5552345678);
-    add_shippers('Acme Shipping', 5553456789);
-    add_shippers('Globe Shipping', 5554567890);
-    add_shippers('Oceanic Shipping', 5555678901);
-    commit;
-END;
-/
+exec add_shippers('ABC Shipping', 5551234567);
+exec add_shippers('XYZ Shipping', 5552345678);
+exec add_shippers('Acme Shipping', 5555678901);
+exec add_shippers('Globe Shipping', 5554567890);
+exec add_shippers('Oceanic Shipping', 5556789012);
+exec add_shippers('Transglobal Logistics', 5553456789);
+exec add_shippers('Fast Track Shipping', 5552345678);
+exec add_shippers('Ocean Blue Logistics', 5557890123);
 
+select * from shippers;
 ----------------adding publishers details
 
-BEGIN
-    add_publishers ('Daugherty-Collier publishing');
-    add_publishers ('Boyer LLC publishing');
-    add_publishers ('Kemmer-Shanahan publishing');
-    add_publishers ('Bailey, Wyman and Zulauf publishing');
-    add_publishers ('McDermott-Bergstrom publishing');
-    add_publishers ('Fay and Sons publishing');
-    add_publishers ('Adams and Sons publishing');
-    add_publishers ('O''Keefe-Rath publishing');
-    add_publishers ('Rosenbaum Group publishing');
-    add_publishers ('Cole Group publishing');
-END;
-/
-commit;
+exec add_publishers ('Daugherty-Collier publishing');
+exec add_publishers ('Boyer LLC publishing');
+exec add_publishers ('Kemmer-Shanahan publishing');
+exec add_publishers ('Bailey, Wyman and Zulauf publishing');
+exec add_publishers ('McDermott-Bergstrom publishing');
+exec add_publishers ('Fay and Sons publishing');
+exec add_publishers ('Adams and Sons publishing');
+exec add_publishers ('O''Keefe-Rath publishing');
+exec add_publishers ('Rosenbaum Group publishing');
+exec add_publishers ('Cole Group publishing');
 
+select * from publishers;
 
 -----------------------adding authors details
 
-BEGIN
-    add_authors ('Leda', 'Dupree', 'Schuppe, Kling and Koepp');
-    add_authors ('Shayne', 'Steffan', 'Kautzer Inc');
-    add_authors ('Anatola', 'Aveline', 'Breitenberg Group');
-    add_authors ('Lesly', 'Delhay', 'Haag Group');
-    add_authors ('Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
-    add_authors ('Charleen', 'Selley', 'Mitchell LLC');
-    add_authors ('Meredithe', 'Stanbra', 'Hilll-Nicolas');
-    add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
-    add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
-    add_authors ('Aluino', 'Thairs', 'Renner-Donnelly');
-    add_authors ('Jamima', 'Dunthorne', 'Haag, Feest and Mante');
-    commit;
-END;
-/
+exec add_authors ('Leda', 'Dupree', 'Schuppe, Kling and Koepp');
+exec add_authors ('Shayne', 'Steffan', 'Kautzer Inc');
+exec add_authors ('Anatola', 'Aveline', 'Breitenberg Group');
+exec add_authors ('Lesly', 'Delhay', 'Haag Group');
+exec add_authors ('Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
+exec add_authors ('Charleen', 'Selley', 'Mitchell LLC');
+exec add_authors ('Meredithe', 'Stanbra', 'Hilll-Nicolas');
+exec add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
+exec add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
+exec add_authors ('Aluino', 'Thairs', 'Renner-Donnelly');
+exec add_authors ('Jamima', 'Dunthorne', 'Haag, Feest and Mante');
+
+select * from authors;
 
 -----------------------adding genre details
 
-BEGIN 
-    add_genres ('DRAMA');
-    add_genres ('Comedy');
-    add_genres ('Musical');
-    add_genres ('Horror');
-    add_genres ('Action');
-    add_genres ('Romantic');
-    add_genres ('sci-fi');
-    add_genres ('Documentry');
-    add_genres ('poetry');
-    add_genres ('mystery');
-    add_genres ('Humor');
-    commit;
-END;
-/
+exec add_genres ('DRAMA');
+exec add_genres ('Comedy');
+exec add_genres ('Musical');
+exec add_genres ('Horror');
+exec add_genres ('Action');
+exec add_genres ('Romantic');
+exec add_genres ('sci-fi');
+exec add_genres ('Documentry');
+exec add_genres ('poetry');
+exec add_genres ('mystery');
+exec add_genres ('Humor');
+
+select * from genres;
 
 ----------------------adding customers data to the table
 
-BEGIN
-  add_customer('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
-  add_customer('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
-  add_customer('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
-  add_customer('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
-  add_customer('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
-  add_customer('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
-  add_customer('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
-  add_customer('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
-  add_customer('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
-  add_customer('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
-  commit;
-END;
-/
+exec add_customer('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
+exec add_customer('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
+exec add_customer('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
+exec add_customer('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
+exec add_customer('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
+exec add_customer('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
+exec add_customer('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
+exec add_customer('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
+exec add_customer('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
+exec add_customer('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
+exec add_customer('William', 'Taylor', 'williamtaylcqecdqeor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
 
+select * from customers;
 ----------------------adding books data to the table
-
+--select * from customers;
 ------------------------------------------------------------------------------------------
 
-DECLARE
-  l_genres_id genres.id%TYPE;
-  l_author_id authors.id%TYPE;
-  l_available_quantity books.available_quantity%TYPE;
-  l_edition books.edition%TYPE;
-  l_price books.price%TYPE;
-  l_publisher publishers.id%TYPE;
-BEGIN
-  SELECT id INTO l_author_id FROM authors ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
-  SELECT id INTO l_publisher FROM publishers ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
-  SELECT id INTO l_genres_id FROM genres ORDER BY DBMS_RANDOM.VALUE() FETCH FIRST 1 ROWS ONLY;
-  l_edition := FLOOR(DBMS_RANDOM.VALUE(1, 11));
-  l_available_quantity := FLOOR(DBMS_RANDOM.VALUE(1, 30));
-  l_price := ROUND(DBMS_RANDOM.VALUE(10, 100), 2);
-  add_books('071565262-4','Hijacking, A (Kapringen)', sysdate, l_edition, l_available_quantity, l_price,l_author_id, l_publisher, l_genres_id, l_author_id);
-END;
-/
-commit;
+exec add_books('071565262-16', 'Python', '12-Mar-2010', 5, 15, 23.10, 3, 4, 2, 6);
 
+exec add_books('071565216-16', 'Faily Tales', '12-Mar-2010', 5, 9, 23.10, 9, 4, 2, 6);
+
+exec add_books('071235216-16', 'Faily books', '10-Feb-2023', 1, 2, 2.1, 4, 2, 1, 9);
+
+exec add_books('091565216-16', 'data base', '9-Dec-2022', 1, 4, 6.30, 2, 1, 5, 4);
+
+exec add_books('091569316-91', 'algotithms', '1-Jun-2010', 2, 13, 5.40, 9, 3, 6, 9);
+
+select * from books;
+----------------------adding books data to the table
+
+
+exec add_discounts ('special10', 20, 1, '21-June-2023');
+  
+select * from discounts;
+select * from orders;
 ------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 ------------------creating the views for the customers to show the books details
 
@@ -682,7 +764,7 @@ BEGIN
             END IF;
     END;
     EXECUTE IMMEDIATE 'CREATE VIEW books_details AS
-                       SELECT b.title, b.isbn, a.first_name author_name, b.price AS price, p.name AS publisher_name
+                       SELECT b.title, b.isbn, a.first_name author_name, b.price AS price, p.name AS publisher_name, b.available_quantity
                        FROM books b
                        JOIN authors a ON b.author = a.id
                        JOIN publishers p ON b.publisher = p.id';
@@ -822,3 +904,13 @@ END;
 /
 commit;
 
+
+select * from orders;
+
+
+
+--------------------------------
+
+-- deleting the rows and foreign keys issues need to handle (use soft delete like putting status of the rows)
+
+-- 
