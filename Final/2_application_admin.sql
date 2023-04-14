@@ -203,9 +203,9 @@ DECLARE
 BEGIN
     EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || 
         '(id NUMBER(10) DEFAULT reviews_id_seq.nextval  PRIMARY KEY,
-        book_id int,
-        customer_id int,
-        rating int,
+        book_id NUMBER,
+        customer_id NUMBER,
+        rating NUMBER CHECK (rating >= 1 AND rating <= 10),
         review_date Date,
         FOREIGN KEY (customer_id) REFERENCES customers(id),
         FOREIGN KEY (book_id) REFERENCES books(id))';
@@ -230,7 +230,7 @@ BEGIN
     EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || 
         '(id NUMBER(10) DEFAULT  discounts_id_seq.nextval primary key,
         name varchar(100),
-        discount_value NUMERIC(4,2),
+        discount_value NUMBER,
         book_id NUMBER(10),
         discount_expiry date, 
         FOREIGN KEY (book_id) REFERENCES books(id))';
@@ -278,11 +278,13 @@ DECLARE
 BEGIN
     EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || 
         '(id NUMBER(10) DEFAULT orders_id_seq.nextval primary key,
-        customer_id int,
+        customer_id NUMBER,
         order_date date,
-        discount_id int,
-        book_id int,
-        shipper int,
+        discount_id NUMBER,
+        book_id NUMBER,
+        final_price NUMBER,
+        quantity NUMBER
+        shipper NUMBER,
         status varchar(50),
         FOREIGN KEY (customer_id) REFERENCES customers(id),
         FOREIGN KEY (discount_id) REFERENCES discounts(id),
@@ -311,8 +313,8 @@ DECLARE
 BEGIN
     EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || 
         '(book_id NUMBER(10) DEFAULT orders_details_id_seq.nextval primary key,
-        order_id int,
-        quantity int,
+        order_id NUMBER,
+        quantity NUMBER,
         FOREIGN KEY (book_id) REFERENCES books(id),
         FOREIGN KEY (order_id) REFERENCES orders(id))';
         DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' created successfully');
@@ -549,24 +551,48 @@ CREATE OR REPLACE PROCEDURE add_orders (
     p_order_date IN orders.order_date%TYPE,
     p_discount_id IN orders.discount_id%TYPE,
     p_book_id IN orders.book_id%TYPE,
+    p_final_price IN orders.final_price%TYPE,
+    p_number_of_books IN orders.quantity%TYPE,
     p_shipper IN orders.shipper%TYPE,
     p_status IN orders.status%TYPE
 )
 IS
+    order_count NUMBER;
     book_quantity NUMBER;
+    discount_percentage NUMBER;
+    book_price NUMBER;
+    discounted_price NUMBER;
+    first_order_discount NUMBER;
+    discount_coupon NUMBER;
+    num_books_ordered NUMBER;
 BEGIN
-    SELECT available_quantity INTO book_quantity FROM books WHERE id = p_book_id FOR UPDATE;
-    IF book_quantity IS NULL THEN
-        DBMS_OUTPUT.PUT_LINE('Book not found');
-        --RAISE_APPLICATION_ERROR(-20002, 'Book not found');
-    ELSIF book_quantity <= 0 THEN
-        DBMS_OUTPUT.PUT_LINE('Selected Book is outof stock!!');
-        --RAISE_APPLICATION_ERROR(-20001, 'Book not available');
+    SELECT COUNT(*) INTO order_count FROM orders WHERE id = p_customer_id;
+    IF p_number_of_books > 5 THEN
+        discount_percentage := 30
+    ELSIF order_count = 0 THEN
+        first_order_discount := 10;
+        SELECT discount INTO discount_coupon FROM discounts WHERE id = p_discount_id;
+        discount_percentage = first_order_discount + discount_coupon
     ELSE
-        INSERT INTO orders(id,customer_id, order_date, discount_id, book_id, shipper, status)
-        VALUES (orders_id_seq.nextval,p_customer_id, p_order_date, p_discount_id, p_book_id, p_shipper, p_status);
-        COMMIT;
-        DBMS_OUTPUT.PUT_LINE('Order added successfully');
+        SELECT discount INTO discount_percentage FROM discounts WHERE id = p_discount_id;
+    END IF;
+
+    SELECT price - (price * (discount_percentage / 100)) INTO p_final_price FROM books WHERE id = p_book_id;
+
+    SELECT available_quantity INTO book_quantity FROM books WHERE id = p_book_id FOR UPDATE;
+
+    IF book_quantity < p_number_of_books THEN
+        DBMS_OUTPUT.PUT_LINE('Selected Book is low in stock!! cannot complete the order');
+    ELSE
+        SELECT discount_expiry INTO discount_expiry_date FROM discounts WHERE id = p_discount_id;
+        IF p_order_date > discount_expiry_date THEN
+            DBMS_OUTPUT.PUT_LINE('Discount coupon has expired!! cannot complete the order');
+        ELSE
+            INSERT INTO orders(id,customer_id, order_date, discount_id, book_id, shipper, final_price, quantity, status)
+            VALUES (orders_id_seq.nextval,p_customer_id, p_order_date, p_discount_id, p_book_id, p_shipper, p_final_price, p_number_of_books, p_status);
+            COMMIT;
+            DBMS_OUTPUT.PUT_LINE('Order added successfully');
+        END IF;
     END IF;
 END;
 /
