@@ -2,16 +2,16 @@ set serveroutput on;
 
 --Drop Tables if exists
 BEGIN
-    EXECUTE IMMEDIATE 'DROP TABLE BOOKS';
-    EXECUTE IMMEDIATE 'DROP TABLE CUSTOMERS';
-    EXECUTE IMMEDIATE 'DROP TABLE REVIEWS';
-    EXECUTE IMMEDIATE 'DROP TABLE DISCOUNTS';
-    EXECUTE IMMEDIATE 'DROP TABLE ORDERS';
-    EXECUTE IMMEDIATE 'DROP TABLE SHIPPERS';
-    EXECUTE IMMEDIATE 'DROP TABLE ORDER_DETAILS';  
-    EXECUTE IMMEDIATE 'DROP TABLE PUBLISHERS';
-    EXECUTE IMMEDIATE 'DROP TABLE AUTHORS';
-    EXECUTE IMMEDIATE 'DROP TABLE GENRES';
+    EXECUTE IMMEDIATE 'DROP TABLE BOOKS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE CUSTOMERS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE REVIEWS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE DISCOUNTS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE ORDERS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE SHIPPERS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE ORDER_DETAILS CASCADE CONSTRAINTS';  
+    EXECUTE IMMEDIATE 'DROP TABLE PUBLISHERS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE AUTHORS CASCADE CONSTRAINTS';
+    EXECUTE IMMEDIATE 'DROP TABLE GENRES CASCADE CONSTRAINTS';
 EXCEPTION
    WHEN OTHERS THEN
       IF SQLCODE != -942 THEN
@@ -283,7 +283,7 @@ BEGIN
         discount_id NUMBER,
         book_id NUMBER,
         final_price NUMBER,
-        quantity NUMBER
+        quantity NUMBER,
         shipper NUMBER,
         status varchar(50),
         FOREIGN KEY (customer_id) REFERENCES customers(id),
@@ -312,7 +312,8 @@ DECLARE
     table_name VARCHAR2(100) := 'orders_details';
 BEGIN
     EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || 
-        '(book_id NUMBER(10) DEFAULT orders_details_id_seq.nextval primary key,
+        '(id NUMBER (10) DEFAULT orders_details_id_seq.nextval primary key,
+        book_id NUMBER(10),
         order_id NUMBER,
         quantity NUMBER,
         FOREIGN KEY (book_id) REFERENCES books(id),
@@ -348,6 +349,7 @@ create or replace view view_authors as select * from authors;
 
 create or replace view view_publishers as select * from publishers;
 
+create or replace view view_orders as select * from orders;
 
 -----------------------------------------------------------------------------------------------------------------------------
 
@@ -533,6 +535,14 @@ BEGIN
     VALUES (discounts_id_seq.nextval,p_name, p_discount_value, p_book_id, p_discount_expiry);
     DBMS_OUTPUT.PUT_LINE('discounts added to table');
     COMMIT;
+EXCEPTION 
+    WHEN OTHERS THEN
+        IF sqlcode = -2291 or sqlcode = -6512 THEN
+            dbms_output.put_line('no parent key found for the added data');
+        ELSE
+            dbms_output.put_line('error in adding the discounts code');
+            RAISE;
+        END IF;
 END;
 /
 COMMIT;
@@ -565,35 +575,42 @@ IS
     first_order_discount NUMBER;
     discount_coupon NUMBER;
     num_books_ordered NUMBER;
+    v_discount_expiry date;
+    p_discount_expiry_date discounts.discount_expiry%TYPE;
 BEGIN
     SELECT COUNT(*) INTO order_count FROM orders WHERE id = p_customer_id;
     IF p_number_of_books > 5 THEN
-        discount_percentage := 30
+        discount_percentage := 30;
     ELSIF order_count = 0 THEN
         first_order_discount := 10;
-        SELECT discount INTO discount_coupon FROM discounts WHERE id = p_discount_id;
-        discount_percentage = first_order_discount + discount_coupon
+        SELECT discount_value INTO discount_coupon FROM discounts WHERE id = p_discount_id;
+        discount_percentage := first_order_discount + discount_coupon;
     ELSE
-        SELECT discount INTO discount_percentage FROM discounts WHERE id = p_discount_id;
+        SELECT discount_value INTO discount_percentage FROM discounts WHERE id = p_discount_id;
     END IF;
 
-    SELECT price - (price * (discount_percentage / 100)) INTO p_final_price FROM books WHERE id = p_book_id;
+    SELECT (price*p_number_of_books) - ((price*p_number_of_books) * (discount_percentage / 100)) INTO discounted_price FROM books WHERE id = p_book_id;
 
     SELECT available_quantity INTO book_quantity FROM books WHERE id = p_book_id FOR UPDATE;
 
     IF book_quantity < p_number_of_books THEN
         DBMS_OUTPUT.PUT_LINE('Selected Book is low in stock!! cannot complete the order');
     ELSE
-        SELECT discount_expiry INTO discount_expiry_date FROM discounts WHERE id = p_discount_id;
-        IF p_order_date > discount_expiry_date THEN
+        SELECT discount_expiry INTO v_discount_expiry FROM discounts WHERE id = p_discount_id;
+        IF p_order_date >  v_discount_expiry THEN
             DBMS_OUTPUT.PUT_LINE('Discount coupon has expired!! cannot complete the order');
         ELSE
             INSERT INTO orders(id,customer_id, order_date, discount_id, book_id, shipper, final_price, quantity, status)
-            VALUES (orders_id_seq.nextval,p_customer_id, p_order_date, p_discount_id, p_book_id, p_shipper, p_final_price, p_number_of_books, p_status);
+            VALUES (orders_id_seq.nextval,p_customer_id, p_order_date, p_discount_id, p_book_id, p_shipper, discounted_price, p_number_of_books, p_status);
             COMMIT;
             DBMS_OUTPUT.PUT_LINE('Order added successfully');
         END IF;
     END IF;
+EXCEPTION
+    WHEN no_data_found THEN
+        dbms_output.put_line('some of the entered data not found');
+    WHEN OTHERS THEN
+        RAISE;
 END;
 /
 commit;
@@ -606,10 +623,98 @@ CREATE OR REPLACE TRIGGER update_book_quantity
 AFTER INSERT ON orders
 FOR EACH ROW
 BEGIN
-UPDATE books
-SET available_quantity = available_quantity - 1
-WHERE id = :new.book_id;
+    UPDATE books
+    SET available_quantity = available_quantity - :new.quantity
+    WHERE id = :new.book_id;
 END;
 /
 
 commit;
+
+
+---------------------------------
+
+--creating trigger to add in the order_details table
+
+CREATE OR REPLACE TRIGGER update_order_details
+AFTER INSERT ON orders
+FOR EACH ROW
+BEGIN
+    INSERT INTO orders_details(id, book_id, order_id, quantity) VALUES (orders_details_id_seq.nextval,:new.book_id,:new.id,:new.quantity);
+END;
+/
+
+
+---------------------------------
+
+
+CREATE OR REPLACE PROCEDURE view_order_history (
+    customer_id IN orders.customer_id%TYPE
+)
+IS
+    order_id NUMBER;
+    order_date date;
+    book_title VARCHAR2(225);
+    quantity NUMBER;
+    total_price NUMBER;
+    order_status VARCHAR(225);
+BEGIN
+    BEGIN
+        SELECT orders.id, orders.order_date, (select title from books where id=book_id) as book_title, orders.quantity, orders.final_price, orders.status
+        INTO order_id, order_date, book_title, quantity, total_price, order_status
+        FROM orders
+        WHERE orders.customer_id = customer_id;
+    EXCEPTION
+        WHEN no_data_found THEN
+            order_id := NULL;
+            order_date := NULL;
+            book_title := NULL;
+            quantity := NULL;
+            total_price := NULL;
+            order_status := NULL;
+            dbms_output.put_line('no orders associated with this customer');
+    END;
+END;
+/
+
+
+
+----------------------------------------------------------------------------------------------------------------
+-------
+
+create or replace procedure order_cancel (
+    order_id IN orders.id%TYPE,
+    p_customer_id IN orders.customer_id%TYPE
+)
+IS
+BEGIN
+    UPDATE orders
+    SET status = 'cancelled'
+    WHERE id = order_id and customer_id = p_customer_id;
+EXCEPTION
+    when no_data_found then
+        dbms_output.put_line('given order id and customer id does not match');
+END;
+/
+
+
+
+--------------------------------------
+
+
+
+
+
+----procedure to view the customer data
+
+create or replace procedure view_customer_data (
+    customer_id IN customer.id%TYPE
+)
+IS
+BEGIN
+    select * from customers where id = customer_id;
+EXCEPTION
+    when no_data_found then
+        dbms_output.put_line('customer data does not exist');
+END;
+/
