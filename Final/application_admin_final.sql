@@ -1,5 +1,3 @@
------- SCRIPT TO DROP THE TABLES
-
 
 set serveroutput on
 declare
@@ -350,10 +348,20 @@ EXCEPTION
 END;
 /
 
---creates tables upto here 
 
-------------------------------------------------------------------------------------------------------------------------------
---creating the procedure for authors
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 create or replace PROCEDURE add_authors (
@@ -517,7 +525,7 @@ END;
 /
 commit;
 
-select * from books;
+--select * from books;
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -582,16 +590,10 @@ END;
 /
 commit;
 
---exec application_admin.add_orders(4,sysdate,1,3,3,'confirmed');
 
 
---select * from books;
 
---update books set available_quantity = 0 where id = 3;
 
----------------------------------
-
----trigger updates the book quantity in books table after the insert is executed to the orders table
 
 CREATE OR REPLACE TRIGGER update_book_quantity
 AFTER INSERT ON orders
@@ -603,7 +605,11 @@ WHERE id = :new.book_id;
 END;
 /
 
-----------------creating the sales executive user 
+
+
+
+
+
 
 set serveroutput on
 DECLARE
@@ -642,7 +648,8 @@ END;
 /
 commit;
 
-select * from customers;
+--select * from customers;
+
 ------------------------------------------------ creating customer role 
 
 set serveroutput on
@@ -699,7 +706,7 @@ BEGIN
             --EXECUTE IMMEDIATE 'GRANT SELECT ON application_admin.books TO CUSTOMER';
             --EXECUTE IMMEDIATE 'GRANT SELECT ON discounts_id_seq TO sales_executive';
             EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_books, add_publishers, add_authors, add_shippers, add_genres TO MANAGER';
-            EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_shippers TO MANAGER';
+            EXECUTE IMMEDIATE 'GRANT EXECUTE ON ADD_GENRES TO MANAGER';
             --EXECUTE IMMEDIATE 'GRANT EXECUTE ON  TO MANAGER';
             --EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
             --EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_orders TO customer';
@@ -715,7 +722,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('User CREATED successfully.');
         EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO MANAGER';
         EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_books, add_publishers, add_authors, add_shippers, add_genres TO MANAGER';
-        EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_shippers TO MANAGER';
+        EXECUTE IMMEDIATE 'GRANT EXECUTE ON ADD_GENRES TO MANAGER';
         --EXECUTE IMMEDIATE 'GRANT SELECT application_admin.books TO customer';
         --EXECUTE IMMEDIATE 'GRANT EXECUTE ON add_orders TO customer';
         DBMS_OUTPUT.PUT_LINE('User granted privileges successfully.');
@@ -726,267 +733,11 @@ END;
 commit;
 
 ------------------------------------------------------------------------------------------------------------------------------------
+show user;
 
-----------------adding shipper details
-
-exec add_shippers('ABC Shipping', 5551234567);
-exec add_shippers('XYZ Shipping', 5552345678);
-exec add_shippers('Acme Shipping', 5555678901);
-exec add_shippers('Globe Shipping', 5554567890);
-exec add_shippers('Oceanic Shipping', 5556789012);
-exec add_shippers('Transglobal Logistics', 5553456789);
-exec add_shippers('Fast Track Shipping', 5552345678);
-exec add_shippers('Ocean Blue Logistics', 5557890123);
+SELECT OBJECT_NAME, OBJECT_TYPE FROM ALL_OBJECTS WHERE OBJECT_NAME = 'ADD_SHIPPERS';
 
 
-select * from shippers;
-----------------adding publishers details
+SELECT * FROM USER_ERRORS WHERE NAME = 'ADD_GENRES';
 
-exec add_publishers ('Daugherty-Collier publishing');
-exec add_publishers ('Boyer LLC publishing');
-exec add_publishers ('Kemmer-Shanahan publishing');
-exec add_publishers ('Bailey, Wyman and Zulauf publishing');
-exec add_publishers ('McDermott-Bergstrom publishing');
-exec add_publishers ('Fay and Sons publishing');
-exec add_publishers ('Adams and Sons publishing');
-exec add_publishers ('O''Keefe-Rath publishing');
-exec add_publishers ('Rosenbaum Group publishing');
-exec add_publishers ('Cole Group publishing');
-
-select * from publishers;
-
------------------------adding authors details
-
-exec add_authors ('Leda', 'Dupree', 'Schuppe, Kling and Koepp');
-exec add_authors ('Shayne', 'Steffan', 'Kautzer Inc');
-exec add_authors ('Anatola', 'Aveline', 'Breitenberg Group');
-exec add_authors ('Lesly', 'Delhay', 'Haag Group');
-exec add_authors ('Virginie', 'Amey', 'Jacobi, Wuckert and Yundt');
-exec add_authors ('Charleen', 'Selley', 'Mitchell LLC');
-exec add_authors ('Meredithe', 'Stanbra', 'Hilll-Nicolas');
-exec add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
-exec add_authors ('Zolly', 'Kilvington', 'Feeney-Schimmel');
-exec add_authors ('Aluino', 'Thairs', 'Renner-Donnelly');
-exec add_authors ('Jamima', 'Dunthorne', 'Haag, Feest and Mante');
-
-select * from authors;
-
------------------------adding genre details
-
-exec add_genres ('DRAMA');
-exec add_genres ('Comedy');
-exec add_genres ('Musical');
-exec add_genres ('Horror');
-exec add_genres ('Action');
-exec add_genres ('Romantic');
-exec add_genres ('sci-fi');
-exec add_genres ('Documentry');
-exec add_genres ('poetry');
-exec add_genres ('mystery');
-exec add_genres ('Humor');
-
-select * from genres;
-
-----------------------adding customers data to the table
-
-exec add_customer('John', 'Doe', 'johndoe@example.com', 'password123', '123456', 'Main Street', '123', NULL, 'Anytown', '5551234567');
-exec add_customer('Jane', 'Smith', 'janesmith@example.com', 'password456', '234567', 'Maple Avenue', '456', '20B', 'Someville', '5555678901');
-exec add_customer('Bob', 'Johnson', 'bobjohnson@example.com', 'password789', '345678', 'Oak Boulevard', '789', NULL, 'Othercity', '5559101112');
-exec add_customer('Alice', 'Williams', 'alicewilliams@example.com', 'passwordabc', '456789', 'Pine Street', '321', '10C', 'Anotherplace', '5551212123');
-exec add_customer('Emily', 'Davis', 'emilydavis@example.com', 'passworddef', '567890', 'Cedar Road', '456', NULL, 'Anytown', '5552345678');
-exec add_customer('Charlie', 'Garcia', 'charliegarcia@example.com', 'passwordeg', '678901', 'Spruce Street', '789', '5D', 'Someville', '5556789012');
-exec add_customer('Olivia', 'Brown', 'oliviabrown@example.com', 'passwordhij', '789012', 'Elm Avenue', '123', NULL, 'Othercity', '5551234567');
-exec add_customer('Daniel', 'Wilson', 'danielwilson@example.com', 'passwordklm', '890123', 'Maple Street', '456', '11A', 'Anotherplace', '5555678901');
-exec add_customer('Sophia', 'Lopez', 'sophialopez@example.com', 'passwordnop', '901234', 'Oak Lane', '789', '7B', 'Anytown', '5559101112');
-exec add_customer('William', 'Taylor', 'williamtaylor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
-exec add_customer('William', 'Taylor', 'williamtaylcqecdqeor@example.com', 'passwordqrs', '012345', 'Pine Road', '321', NULL, 'Someville', '5556667779');
-
-select * from customers;
-----------------------adding books data to the table
---select * from customers;
-------------------------------------------------------------------------------------------
-
-exec add_books('071565262-16', 'Python', '12-Mar-2010', 5, 15, 23.10, 3, 4, 2, 6);
-
-exec add_books('071565216-16', 'Faily Tales', '12-Mar-2010', 5, 9, 23.10, 9, 4, 2, 6);
-
-exec add_books('071235216-16', 'Faily books', '10-Feb-2023', 1, 2, 2.1, 4, 2, 1, 9);
-
-exec add_books('091565216-16', 'data base', '9-Dec-2022', 1, 4, 6.30, 2, 1, 5, 4);
-
-exec add_books('091569316-91', 'algotithms', '1-Jun-2010', 2, 13, 5.40, 9, 3, 6, 9);
-
-select * from books;
-----------------------adding books data to the table
-
-
-exec add_discounts ('special10', 20, 1, '21-June-2023');
-  
-select * from discounts;
-select * from orders;
-------------------------------------------------------------------------------------------------------------------------------------
-
-------------------creating the views for the customers to show the books details
-
-set serveroutput on
-BEGIN
-    BEGIN
-        EXECUTE IMMEDIATE 'DROP VIEW books_details';
-        DBMS_OUTPUT.PUT_LINE('dropped books_details view');
-    EXCEPTION
-        WHEN OTHERS THEN
-            IF SQLCODE != -942 THEN
-                RAISE;
-            END IF;
-    END;
-    EXECUTE IMMEDIATE 'CREATE VIEW books_details AS
-                       SELECT b.title, b.isbn, a.first_name author_name, b.price AS price, p.name AS publisher_name, b.available_quantity
-                       FROM books b
-                       JOIN authors a ON b.author = a.id
-                       JOIN publishers p ON b.publisher = p.id';
-    DBMS_OUTPUT.PUT_LINE('created the books_details view');
-    BEGIN
-        EXECUTE IMMEDIATE 'GRANT SELECT ON books_details TO customer';
-        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
-    EXCEPTION
-        WHEN OTHERS THEN
-        IF SQLCODE = -1917 THEN
-            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
-        END IF;
-    END;
-    DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
-END;
-/
-commit;
-
--------------  creating view for the number of books in the each genre
-
-set serveroutput on
-BEGIN
-    BEGIN
-        EXECUTE IMMEDIATE 'DROP VIEW books_per_genre';
-        DBMS_OUTPUT.PUT_LINE('dropped books_per_genre view');
-    EXCEPTION
-        WHEN OTHERS THEN
-            IF SQLCODE != -942 THEN
-                RAISE;
-            END IF;
-    END;
-    EXECUTE IMMEDIATE 'CREATE VIEW books_per_genre AS
-                       SELECT g.name AS genre, COUNT(b.id) AS book_count
-                       FROM genres g
-                       JOIN books b ON b.genres_id = g.id
-                       GROUP BY g.name';
-    DBMS_OUTPUT.PUT_LINE('created books_per_genre view');
-    BEGIN
-        EXECUTE IMMEDIATE 'GRANT SELECT ON books_per_genre TO sales_executive';
-        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
-    EXCEPTION
-        WHEN OTHERS THEN
-        IF SQLCODE = -1917 THEN
-            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
-        END IF;
-    END;
-    DBMS_OUTPUT.PUT_LINE('provided view access of books_per_genre to the sales_executive');
-END;
-/
-commit;
-
-----------------creating view to see the number of books by author;
-set serveroutput on
-BEGIN
-    BEGIN
-        EXECUTE IMMEDIATE 'DROP VIEW NUMBER_OF_BOOKS_BY_AUTHOR';
-        DBMS_OUTPUT.PUT_LINE('dropped NUMBER_OF_BOOKS_BY_AUTHOR view');
-    EXCEPTION
-        WHEN OTHERS THEN
-            IF SQLCODE != -942 THEN
-                RAISE;
-            END IF;
-    END;
-
-    EXECUTE IMMEDIATE 'CREATE VIEW NUMBER_OF_BOOKS_BY_AUTHOR AS
-                       SELECT a.first_name || '' '' || a.second_name AS author_name, COUNT(b.id) AS book_count
-                       FROM authors a
-                       JOIN books b ON b.author = a.id
-                       GROUP BY a.first_name, a.second_name';
-    DBMS_OUTPUT.PUT_LINE('created NUMBER_OF_BOOKS_BY_AUTHOR view');
-    BEGIN
-        EXECUTE IMMEDIATE 'GRANT SELECT ON NUMBER_OF_BOOKS_BY_AUTHOR TO sales_executive';
-        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
-    EXCEPTION
-        WHEN OTHERS THEN
-        IF SQLCODE = -1917 THEN
-            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
-        END IF;
-    END;
-    DBMS_OUTPUT.PUT_LINE('provided view access of NUMBER_OF_BOOKS_BY_AUTHOR to the sales_executive');
-END;
-/
-
-commit;
-
---select * from authors;
-
--------------------- creating the list of books_order_by_rating view and providing the access to the sales_executive
-
-
-set serveroutput on
-BEGIN
-    BEGIN
-        EXECUTE IMMEDIATE 'DROP VIEW LIST_OF_BOOKS_ORDER_BY_RATING';
-        DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING dropped successfully');
-    EXCEPTION
-        WHEN OTHERS THEN
-            IF SQLCODE != -942 THEN
-                RAISE;
-            END IF;
-    END;
-    EXECUTE IMMEDIATE 'CREATE VIEW LIST_OF_BOOKS_ORDER_BY_RATING AS
-                       SELECT b.title, r.rating
-                       FROM books b
-                       JOIN reviews r ON b.id = r.book_id
-                       ORDER BY r.rating DESC';
-    DBMS_OUTPUT.PUT_LINE('View LIST_OF_BOOKS_ORDER_BY_RATING created successfully');
-     BEGIN
-        EXECUTE IMMEDIATE 'GRANT SELECT ON LIST_OF_BOOKS_ORDER_BY_RATING TO sales_executive';
-        DBMS_OUTPUT.PUT_LINE('provided the select previleges to the customer user for books_details view');
-    EXCEPTION
-        WHEN OTHERS THEN
-        IF SQLCODE = -1917 THEN
-            DBMS_OUTPUT.PUT_LINE('customer user does not exist as of now so ignoring the providing the view previleges');
-        END IF;
-    END;
-END;
-/
-commit;
-
----creating the view to see the most number of books published
-
-DECLARE
-    v_publisher_name VARCHAR2(100);
-    v_max_books_published NUMBER;
-BEGIN
-    SELECT p.name, COUNT(*) INTO v_publisher_name, v_max_books_published
-    FROM books b
-    JOIN publishers p
-    ON b.publisher = p.id
-    GROUP BY p.name
-    ORDER BY COUNT(*) DESC
-    FETCH FIRST 1 ROW ONLY;
-    DBMS_OUTPUT.PUT_LINE('Publisher with most books published: ' || v_publisher_name);
-    DBMS_OUTPUT.PUT_LINE('Number of books published: ' || v_max_books_published);
-END;
-/
-commit;
-
-
-select * from orders;
-
-
-
---------------------------------
-
--- deleting the rows and foreign keys issues need to handle (use soft delete like putting status of the rows)
-
--- 
+SELECT * FROM USER_TAB_PRIVS WHERE TABLE_NAME = 'ADD_GENRES' AND PRIVILEGE = 'EXECUTE';

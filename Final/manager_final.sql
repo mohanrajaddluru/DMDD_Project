@@ -1,0 +1,8 @@
+show user;
+
+exec application_admin.add_shippers('Ocean green Logistics', 6667890123);
+
+exec APPLICATION_ADMIN.ADD_GENRES('fi');
+
+SELECT OBJECT_NAME, OBJECT_TYPE FROM ALL_OBJECTS WHERE OBJECT_NAME = 'ADD_GENRES';
+SELECT * FROM USER_ERRORS WHERE NAME = 'ADD_GENRES';
