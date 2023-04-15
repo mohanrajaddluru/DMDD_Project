@@ -698,23 +698,112 @@ END;
 /
 
 
-
---------------------------------------
-
+----------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-----procedure to view the customer data
-
-create or replace procedure view_customer_data (
-    customer_id IN customer.id%TYPE
+CREATE OR REPLACE PROCEDURE increase_stock (
+    p_book_id IN books.id%TYPE,
+    p_quantity IN books.available_quantity%TYPE
 )
 IS
 BEGIN
-    select * from customers where id = customer_id;
+    UPDATE books
+    SET available_quantity = available_quantity + p_quantity
+    WHERE id = p_book_id;
+    
+    dbms_output.put_line(p_quantity || ' added to stock of book with ID ' || p_book_id);
 EXCEPTION
     when no_data_found then
-        dbms_output.put_line('customer data does not exist');
+        dbms_output.put_line('Book with ID ' || p_book_id || ' does not exist');
 END;
 /
+
+
+
+------------------------------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE PROCEDURE add_book_rating(
+  p_book_id IN reviews.book_id%TYPE,
+  p_customer_id IN reviews.customer_id%TYPE,
+  p_rating IN reviews.rating%TYPE,
+  p_date IN reviews.review_date%TYPE,
+) AS
+  v_order_count NUMBER;
+BEGIN
+
+  SELECT COUNT(*)
+  INTO v_order_count
+  FROM orders
+  WHERE book_id = p_book_id
+  AND customer_id = p_customer_id;
+  
+  IF v_order_count = 0 THEN
+    dbms_output.put_line('Error: Customer has not purchased this book');
+  ELSE
+    INSERT INTO reviews (id, book_id, customer_id, rating, review_date)
+    VALUES (reviews_id_seq.nextval,p_book_id, p_customer_id, p_rating,p_date);
+    
+    dbms_output.put_line('Rating added for book ' || p_book_id || ' by customer ' || p_customer_id);
+    COMMIT;
+  END IF;
+EXCEPTION
+  WHEN OTHERS THEN
+    dbms_output.put_line('Error: ' || SQLERRM);
+    ROLLBACK;
+END;
+/
+
+
+--------------------------------------------------------------------------------
+
+
+-------view with most books published by a publisher
+
+CREATE OR REPLACE VIEW most_books_published AS
+SELECT p.name AS publisher_name, COUNT(*) AS num_books_published
+FROM books b
+JOIN publishers p ON b.publisher = p.id
+GROUP BY p.name
+ORDER BY num_books_published DESC
+FETCH FIRST 1 ROW ONLY;
+
+
+---------view with the books per genre
+
+CREATE or REPLACE VIEW books_per_genre AS
+SELECT g.name AS genre, COUNT(b.id) AS book_count
+FROM genres g
+JOIN books b ON b.genres_id = g.id
+GROUP BY g.name
+
+---------view with the number of books by author
+
+CREATE OR REPLACE VIEW NUMBER_OF_BOOKS_BY_AUTHOR AS
+SELECT a.first_name || '' '' || a.second_name AS author_name, COUNT(b.id) AS book_count
+FROM authors a
+JOIN books b ON b.author = a.id
+GROUP BY a.first_name, a.second_name
+
+
+------- view that has most sold books in a location
+
+CREATE or REPLACE VIEW most_sold_genre_by_location AS
+SELECT c.city, g.name AS genre_name, COUNT(DISTINCT o.book_id) AS book_count
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN books b ON o.book_id = b.id
+JOIN genres g ON b.genres_id = g.id
+WHERE o.status = 'confirmed'
+GROUP BY c.city, g.name
+ORDER BY c.city, book_count DESC;
+
+
+
+
+
+CREATE VIEW books_details AS
+SELECT b.title, b.isbn, a.first_name AS author_name, b.price AS price, p.name AS publisher_name
+FROM books b
+JOIN authors a ON b.author = a.id
+JOIN publishers p ON b.publisher = p.id;

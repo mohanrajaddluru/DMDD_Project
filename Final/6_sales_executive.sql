@@ -1,6 +1,32 @@
 alter session set current_schema=application_admin;
 
 
-exec add_discounts('SPECIAL10',10,3,to_date('21-JAN-2024','DD-MON-YYYY'));
-
-exec add_discounts('BOOKWORM', 25, 3, to_date('31-DEC-2029','DD-MON-YYYY'));
+exec add_discounts('SPRING20', 20, 1, to_date ('15-APR-2024','DD-MON-YYYY'));
+exec add_discounts('FALL30', 30, 3, to_date ('30-SEP-2023','DD-MON-YYYY'));
+exec add_discounts('SUMMER25', 25, 2, to_date ('01-JUN-2023','DD-MON-YYYY'));
+exec add_discounts('HOLIDAY50', 50, 5, to_date ('20-DEC-2023','DD-MON-YYYY'));
+exec add_discounts('BACKTOSCHOOL15', 15, 1, to_date ('15-AUG-2023','DD-MON-YYYY'));
+exec add_discounts('CLEARANCE70', 70, 10, to_date ('31-MAR-2024','DD-MON-YYYY'));
+exec add_discounts('MEMORIALDAY', 25, 2, to_date ('27-MAY-2023','DD-MON-YYYY'));
+exec add_discounts('CYBERMONDAY', 30, 4, to_date ('27-NOV-2023','DD-MON-YYYY'));
+exec add_discounts('FREESHIPPING', 0, 1, to_date ('01-JAN-2024','DD-MON-YYYY'));
+exec add_discounts('BOGO50', 50, 2, to_date ('01-APR-2023','DD-MON-YYYY'));
+exec add_discounts('VIP25', 25, 1, to_date ('01-JAN-2024','DD-MON-YYYY'));
+exec add_discounts('NEWYEAR21', 25, 3, to_date('01-JAN-2021','DD-MON-YYYY'));
+exec add_discounts('SPRINGSALE21', 30, 2, to_date('01-APR-2021','DD-MON-YYYY'));
+exec add_discounts('MEMORIAL21', 20, 1, to_date('31-MAY-2021','DD-MON-YYYY'));
+exec add_discounts('FATHERSDAY21', 15, 2, to_date('20-JUN-2021','DD-MON-YYYY'));
+exec add_discounts('INDEPENDENCE21', 25, 3, to_date('04-JUL-2021','DD-MON-YYYY'));
+exec add_discounts('BACKTOSCHOOL21', 20, 2, to_date('01-SEP-2021','DD-MON-YYYY'));
+exec add_discounts('HARVEST21', 30, 1, to_date('22-SEP-2021','DD-MON-YYYY'));
+exec add_discounts('HALLOWEEN21', 10, 1, to_date('31-OCT-2021','DD-MON-YYYY'));
+exec add_discounts('BLACKFRIDAY21', 50, 4, to_date('26-NOV-2021','DD-MON-YYYY'));
+exec add_discounts('CYBERMONDAY21', 40, 3, to_date('29-NOV-2021','DD-MON-YYYY'));
+exec add_discounts('CHRISTMAS21', 20, 2, to_date('25-DEC-2021','DD-MON-YYYY'));
+exec add_discounts('NEWYEAR22', 30, 3, to_date('01-JAN-2022','DD-MON-YYYY'));
+exec add_discounts('VALENTINES22', 15, 1, to_date('14-FEB-2022','DD-MON-YYYY'));
+exec add_discounts('STPATRICKS22', 10, 1, to_date('17-MAR-2022','DD-MON-YYYY'));
+exec add_discounts('EASTERSALE22', 25, 2, to_date('17-APR-2022','DD-MON-YYYY'));
+exec add_discounts('MOTHERSDAY22', 20, 2, to_date('08-MAY-2022','DD-MON-YYYY'));
+exec add_discounts('MEMORIAL22', 15, 1, to_date('30-MAY-2022','DD-MON-YYYY'));
+exec add_discounts('FATHERSDAY22', 10, 1, to_date('19-JUN-2022','DD-MON-YYYY'));
